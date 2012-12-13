@@ -1,4 +1,4 @@
-Reseach project at Vilnius University. Main idea is to find graphs crossing number using some heruistics. There are three different approaches - 
+Reseach project at Vilnius University. Main idea is to find graphs minimum crossing number using some heruistics. There are three different approaches - 
 1. precise
 2. greedy
 3. randomized
