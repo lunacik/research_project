@@ -9,6 +9,5 @@ fileReader.o: ../file_reader/fileReader.c ../file_reader/fileReader.h
 randomize.o: ../rand/randomize.c ../rand/randomize.h
 	gcc -c -O2 ../rand/randomize.c -I../rand
 
-
 clean: *.o greedy
 	rm greedy *.o

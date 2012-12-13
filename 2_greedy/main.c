@@ -43,6 +43,7 @@ int tryToEmbed(graphP * theGraph, int edgesList[][2], int edgesCount)
 }
 
 
+
 /* main 
  * graph is read from a given file as parameter*/
 int main(int argc, char *argv[])

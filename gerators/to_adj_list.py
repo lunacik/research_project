@@ -43,5 +43,3 @@ for adj in adj_list:
         file.write(a + " ")
     file.write("-1\n")
 
-
-
