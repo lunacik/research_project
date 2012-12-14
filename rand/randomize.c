@@ -4,7 +4,7 @@
 #include "stdlib.h"
 
 /* shuffle given edges list in random order */
-void shuffleEdges(int edgesList[][2], int edgesCount)
+void shuffleEdges(int ** edgesList, int edgesCount)
 {
     int i, j;
     int tmp1, tmp2;

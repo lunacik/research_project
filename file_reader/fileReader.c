@@ -16,18 +16,26 @@
 */
 
 /* function to load graph from file to list of edges */
-int readGraphFromFile(char * fileName, int edgesList[][2])
+int ** readGraphFromFile(char * fileName, int * edgesCount)
 {
     FILE * file = fopen(fileName, "r");
-    
+    int ** edgesList;
+
     if(file == NULL)
     {
-        return 0;
+        return NULL;
     }
 
-    int edgesCount, vertexCount, i = 0, j = 0, u, v;
-    fscanf(file, "%d", &edgesCount);
+    int vertexCount, i, j = 0, u, v;
+    fscanf(file, "%d", edgesCount);
     fscanf(file, "%d", &vertexCount);
+
+    edgesList = malloc((*edgesCount)*sizeof(int*));
+    
+    if(!edgesList)
+    {
+        return NULL;
+    }
 
     for(i = 0; i < vertexCount; i++)
     {
@@ -36,37 +44,26 @@ int readGraphFromFile(char * fileName, int edgesList[][2])
 
         while(v != -1)
         {
+            edgesList[j] = malloc(2*sizeof(int)); 
             edgesList[j][0] = u;
             edgesList[j++][1] = v;
 
             fscanf(file, "%d", &v);
         }
     }
-
-    return 1;
-}
-
-
-/* function to get edges count of graph */
-int getEdgesCount(char * fileName)
-{
-    FILE * file = fopen(fileName, "r");
-    int edgesCount;
-    fscanf(file, "%d", &edgesCount);
-    return edgesCount;
-}
-
-/*
-void write_to_file(char * filename, int array[][2], int n)
-{
-    FILE * file = fopen(filename, "w");
-    int i = 0;
-    for(; i < n; i++)
-    {
-        fprintf(file, "%d %d\n", array[i][0], array[i][1]);
-    }
     fclose(file);
+    return edgesList;
 }
-*/
 
+
+/* freeing allocated memory for edges */
+void freeMem(int ** edgesList, int edgesCount)
+{
+    int i;
+    for(i = 0; i < edgesCount; i++)
+    {
+        free(edgesList[i]);
+    }
+    free(edgesList);
+}
 

@@ -3,7 +3,7 @@
 #define RANDOMIZE_H
 
 
-void shuffleEdges(int edgesList[][2], int edgesCount);
+void shuffleEdges(int ** edgesList, int edgesCount);
 
 
 #endif

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "graph.h" //from planarity project
-#include "fileReader.h" //for file processing
+#include "fileReader.h" //for loading graph from file
 #include "randomize.h" //for shuffling edges
 
 
@@ -27,7 +27,7 @@ int tryToAddEdge(graphP * theGraph, int u, int v)
 
 /* trying to add as much edges as it can while preserving planarity.
  * Returns the number of edges which were unable to add */
-int tryToEmbed(graphP * theGraph, int edgesList[][2], int edgesCount)
+int tryToEmbed(graphP * theGraph, int ** edgesList, int edgesCount)
 {
     int i;
     int edgesFailedToEmbed = 0;
@@ -57,11 +57,11 @@ int main(int argc, char *argv[])
         exit(1);
     }
     
-    const int edgesCount = getEdgesCount(argv[1]);
+    int edgesCount;
 
-    int edgesList[edgesCount][2];
+    int ** edgesList = readGraphFromFile(argv[1], &edgesCount);
 
-    if(!readGraphFromFile(argv[1], edgesList))
+    if(edgesList == NULL)
     {
         printf("reading from file failed\n");
         exit(1);
@@ -69,10 +69,14 @@ int main(int argc, char *argv[])
 
     gp_InitGraph(theGraph, edgesCount);
     
+    clock_t begin, end;
+    double time_spent;
+
+    begin = clock();    
     minEdgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount); //1 iteration
     gp_Free(&theGraph);
 
-    for(i = 0; i < 100; i++) //figure out how many iterations you need
+    for(i = 0; i < 10; i++) //figure out how many iterations you need
     {
         theGraph = gp_New();
         gp_InitGraph(theGraph, edgesCount);
@@ -80,11 +84,16 @@ int main(int argc, char *argv[])
         edgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount);
         minEdgesFailedToEmbed = MIN(minEdgesFailedToEmbed, edgesFailedToEmbed);
         gp_Free(&theGraph);
-    } 
+    }
+
+    end = clock();
+    time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("time spent - %f\n", time_spent);
 
     printf("Minimum count of edges which failed to embed - %d\n", 
             minEdgesFailedToEmbed);
-    
+
+    freeMem(edgesList, edgesCount); 
     return 0;
 }
 

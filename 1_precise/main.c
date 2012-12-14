@@ -5,41 +5,33 @@
 #include <stdlib.h>
 #include <time.h>
 #include "graph.h" //from planarity project
-#include "fileReader.h" //for file processing
-#include "randomize.h" //for shuffling edges
+#include "fileReader.h" //for loading graph from file
 
 
-/* if edge doesn't affect on graph planarity, then it will be added
- * otherwise it won't. Returns wheter failed or not to add an edge */
-int tryToAddEdge(graphP * theGraph, int u, int v)
-{
-    graphP testGraph = gp_DupGraph(*theGraph);
-    gp_AddEdge(testGraph, u, 0, v, 0);
-    int result = gp_Embed(testGraph, EMBEDFLAGS_PLANAR);
-    if(result != NONPLANAR)
-    {
-        gp_AddEdge(*theGraph, u, 0, v, 0);
-    }
-    gp_Free(&testGraph);
-    return result;
-}
-
-
-/* trying to add as much edges as it can while preserving planarity.
- * Returns the number of edges which were unable to add */
-int tryToEmbed(graphP * theGraph, int edgesList[][2], int edgesCount)
+int f(graphP * theGraph, int edgesCount)
 {
     int i;
-    int edgesFailedToEmbed = 0;
+    
+    graphP testGraph = gp_DupGraph(*theGraph);
 
+    if(gp_Embed(testGraph, EMBEDFLAGS_PLANAR) != NONPLANAR)
+    {
+        return 0;
+    }
+
+    gp_Free(&testGraph);
     for(i = 0; i < edgesCount; i++)
     {
-        if(tryToAddEdge(theGraph, edgesList[i][0], edgesList[i][1]) == NONPLANAR)
+        gp_HideEdge(*theGraph, 2 * edgesCount + i);
+        testGraph = gp_DupGraph(*theGraph);
+
+        if(gp_Embed(testGraph, EMBEDFLAGS_PLANAR) != NONPLANAR)
         {
-            edgesFailedToEmbed++;
+            return 1;
         }
+        gp_Free(&testGraph);
+        gp_RestoreEdge(*theGraph, 2 * edgesCount + i);
     }
-    return edgesFailedToEmbed;
 }
 
 
@@ -48,7 +40,6 @@ int tryToEmbed(graphP * theGraph, int edgesList[][2], int edgesCount)
 int main(int argc, char *argv[])
 {
     graphP theGraph = gp_New();
-    int i, minEdgesFailedToEmbed, edgesFailedToEmbed;
 
     if(argc < 2)
     {
@@ -56,34 +47,41 @@ int main(int argc, char *argv[])
         exit(1);
     }
     
-    const int edgesCount = getEdgesCount(argv[1]);
+    int edgesCount, i;
 
-    int edgesList[edgesCount][2];
+    int ** edgesList = readGraphFromFile(argv[1], &edgesCount);
 
-    if(!readGraphFromFile(argv[1], edgesList))
+    if(edgesList == NULL)
     {
         printf("reading from file failed\n");
         exit(1);
     }
 
     gp_InitGraph(theGraph, edgesCount);
-    
-    minEdgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount); //1 iteration
-    gp_Free(&theGraph);
-
-    for(i = 0; i < 100; i++) //figure out how many iterations you need
+   
+    for(i = 0; i < edgesCount; i++)
     {
-        theGraph = gp_New();
-        gp_InitGraph(theGraph, edgesCount);
-        shuffleEdges(edgesList, edgesCount);
-        edgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount);
-        minEdgesFailedToEmbed = MIN(minEdgesFailedToEmbed, edgesFailedToEmbed);
-        gp_Free(&theGraph);
-    } 
+        gp_AddEdge(theGraph, edgesList[i][0], 0, edgesList[i][1], 0);
+    }
 
-    printf("Minimum count of edges which failed to embed - %d\n", 
-            minEdgesFailedToEmbed);
-    
+    printf("edges which cannot be dropped count - %d\n", f(&theGraph, edgesCount));
+
+    //gp_HideEdge(theGraph, 20016);
+    //gp_RestoreEdge(theGraph, 20016);
+    //printf("%s\n", gp_Embed(theGraph, EMBEDFLAGS_PLANAR) ? "not planar" : "planar");
+
+    /*
+    clock_t begin, end;
+    double time_spent;
+
+    begin = clock();    
+    //logic goes here
+    end = clock();
+    time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("time spent - %f\n", time_spent);
+    */
+
+    freeMem(edgesList, edgesCount); 
     return 0;
 }
 

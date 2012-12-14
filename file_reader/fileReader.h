@@ -5,8 +5,7 @@
 #define FILEREADER_H
 
 
-int readGraphFromFile(char * fileName, int edgesList[][2]);
-int getEdgesCount(char * fileName);
+int ** readGraphFromFile(char * fileName, int * edgesCount);
 
 
 #endif
