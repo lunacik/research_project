@@ -1,5 +1,5 @@
 
-planarity: main.c fileReader.o randomize.o ../planarity/*.c ../planarity/*.h ../file_reader/*.h
+greedy: main.c fileReader.o randomize.o ../planarity/*.c ../planarity/*.h ../file_reader/*.h
 	gcc -O2 main.c fileReader.o randomize.o -o greedy ../planarity/*.c -I../planarity -I../file_reader -I../rand
 
 

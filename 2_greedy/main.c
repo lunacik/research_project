@@ -75,8 +75,13 @@ int main(int argc, char *argv[])
     begin = clock();    
     minEdgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount); //1 iteration
     gp_Free(&theGraph);
+    if(minEdgesFailedToEmbed == 0)
+    {
+        printf("graph is planar\n");
+        exit(0);
+    }
 
-    for(i = 0; i < 10; i++) //figure out how many iterations you need
+    for(i = 0; i < 100; i++) //figure out how many iterations you need
     {
         theGraph = gp_New();
         gp_InitGraph(theGraph, edgesCount);
@@ -92,7 +97,8 @@ int main(int argc, char *argv[])
 
     printf("Minimum count of edges which failed to embed - %d\n", 
             minEdgesFailedToEmbed);
-
+    
+    gp_Free(&theGraph);
     freeMem(edgesList, edgesCount); 
     return 0;
 }

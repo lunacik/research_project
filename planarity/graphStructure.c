@@ -853,7 +853,7 @@ int  upos, vpos;
 
      _AddArc(theGraph, u, v, vpos, ulink);
      _AddArc(theGraph, v, u, upos, vlink);
-     //printf("vpos - %d, upos - %d", vpos, upos);
+     //printf("vpos - %d, upos - %d\n", vpos, upos);
      theGraph->M++;
      return OK;
 }

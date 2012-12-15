@@ -961,7 +961,7 @@ int N, I, J, W, child, RetVal;
 
     /* Preprocessing */
 
-    //theGraph->embedFlags = embedFlags;
+    theGraph->embedFlags = embedFlags;
 
     if (gp_CreateDFSTree(theGraph) != OK) 
         return NOTOK;
@@ -969,12 +969,10 @@ int N, I, J, W, child, RetVal;
     if (!(theGraph->internalFlags & FLAGS_SORTEDBYDFI))
         if (gp_SortVertices(theGraph) != OK) 
             return NOTOK;
-
     gp_LowpointAndLeastAncestor(theGraph);
 
     _CreateSortedSeparatedDFSChildLists(theGraph);
     _CreateFwdArcLists(theGraph);
-
     _CreateDFSTreeEmbedding(theGraph);
 
     /* In reverse DFI order, process each vertex by embedding its

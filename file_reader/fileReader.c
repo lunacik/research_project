@@ -29,7 +29,7 @@ int ** readGraphFromFile(char * fileName, int * edgesCount)
     int vertexCount, i, j = 0, u, v;
     fscanf(file, "%d", edgesCount);
     fscanf(file, "%d", &vertexCount);
-
+    
     edgesList = malloc((*edgesCount)*sizeof(int*));
     
     if(!edgesList)

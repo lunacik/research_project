@@ -1,5 +1,5 @@
 
-planarity: main.c fileReader.o ../planarity/*.c ../planarity/*.h ../file_reader/*.h
+precise: main.c fileReader.o ../planarity/*.c ../planarity/*.h ../file_reader/*.h
 	gcc -O2 main.c fileReader.o -o precise ../planarity/*.c -I../planarity -I../file_reader
 
 

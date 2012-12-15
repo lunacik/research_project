@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
     time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
     printf("time spent - %f\n", time_spent);
     */
-
+    gp_Free(&theGraph);
     freeMem(edgesList, edgesCount); 
     return 0;
 }
