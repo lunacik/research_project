@@ -11,7 +11,6 @@ void shuffleEdges(int ** edgesList, int edgesCount)
     int i, j;
     int tmp1, tmp2;
 
-    srand(time(NULL));
     for(i = edgesCount - 1; i >= 0; i--)
     {
         j = rand() % edgesCount;
@@ -29,13 +28,12 @@ void shuffleEdges(int ** edgesList, int edgesCount)
 /* generating list random of indexes of random size */
 int * getRandomEdges(int * listSize, int edgesCount)
 {
-    srand(time(NULL));
-    *listSize = rand() % edgesCount; //maybe some range will be more efficient
+    *listSize = random() % edgesCount; //maybe some range will be more efficient
     int i, j, tmp, unique = 1;
     int * list = malloc(*listSize * sizeof(int));
     for(i = 0; i < *listSize; i++)
     {
-        tmp = rand() % edgesCount;
+        tmp = random() % edgesCount;
         for(j = 0; j < i; j++)
         {
             if(list[j] == tmp)
@@ -61,7 +59,7 @@ int * getRandomEdges(int * listSize, int edgesCount)
 /* method to return random number of random edges from list */
 int * getRandomEdgesFromList(int * list, int listSize, int * newListSize)
 {
-    srand(time(NULL));
+    //srand(time(NULL));
     *newListSize = rand() % listSize; //size can be same as initial list or zero - flaw or pros?
     int * newList = malloc(*newListSize * sizeof(int));
     int i, j, tmp, unique = 1;

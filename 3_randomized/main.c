@@ -49,7 +49,6 @@ int removeRandomEdges(graphP * theGraph, int edgesCount)
         arcPos = DOUBLED_EDGES_COUNT + randomList[i] * 2;
         gp_HideEdge(*theGraph, arcPos);
     }
-    
     graphP testGraph = gp_DupGraph(*theGraph);
     
     for(i = 0; i < listSize; i++)
@@ -58,7 +57,7 @@ int removeRandomEdges(graphP * theGraph, int edgesCount)
         gp_RestoreEdge(*theGraph, arcPos);
     }   
     
-    //free(randomList);
+    free(randomList);
     if(gp_Embed(testGraph, EMBEDFLAGS_PLANAR) == NONPLANAR)
     {
         gp_Free(&testGraph);
@@ -67,7 +66,7 @@ int removeRandomEdges(graphP * theGraph, int edgesCount)
     else
     {
         gp_Free(&testGraph);
-        return edgesCount - listSize;
+        return listSize;
         //return restoreEdges(randomList, listSize, theGraph, DOUBLED_EDGES_COUNT);
     }
 
@@ -116,17 +115,18 @@ int main(int argc, char * argv[])
     clock_t begin, end;
     double time_spent;
 
-    //begin = clock();    
+    begin = clock();    
     //logic goes here
-    
+     
+    srand(time(NULL));
     int minEdgesFailedToEmbed = removeRandomEdges(&theGraph, edgesCount); //1 iteration
-    int tmp;
-    for(i = 0; i < 10000; i++) // figure out how many iterations
+    int tmp, j;
+    for(i = 0; i < 1000; i++) // figure out how many iterations
     {
         tmp = removeRandomEdges(&theGraph, edgesCount);
         minEdgesFailedToEmbed = MIN(tmp, minEdgesFailedToEmbed);
     }
-    //end = clock();
+    end = clock();
 
     printf("Minimum count of edges which failed to embed - %d\n", 
             minEdgesFailedToEmbed);
@@ -137,23 +137,6 @@ int main(int argc, char * argv[])
     gp_Free(&theGraph);
     freeMem(edgesList, edgesCount); 
     
-    /* 
-    theGraph = gp_New(); 
-    gp_InitGraph(theGraph, 9);
-    gp_AddEdge(theGraph, 0, 0, 3, 0);
-    gp_AddEdge(theGraph, 0, 0, 4, 0);
-    gp_AddEdge(theGraph, 0, 0, 5, 0);
-    gp_AddEdge(theGraph, 1, 0, 3, 0);
-    gp_AddEdge(theGraph, 1, 0, 4, 0);
-    gp_AddEdge(theGraph, 1, 0, 5, 0);
-    gp_AddEdge(theGraph, 2, 0, 3, 0);
-    gp_AddEdge(theGraph, 2, 0, 4, 0);
-    gp_AddEdge(theGraph, 2, 0, 5, 0);
-    gp_HideEdge(theGraph, 34);
-    gp_RestoreEdge(theGraph, 34);
-    gp_HideEdge(theGraph, 34);
-    printf("%s\n", gp_Embed(theGraph, EMBEDFLAGS_PLANAR) ? "not planar" : "planar");
-    */
     return 0;
 }
 

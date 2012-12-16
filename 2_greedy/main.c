@@ -72,6 +72,7 @@ int main(int argc, char *argv[])
     clock_t begin, end;
     double time_spent;
 
+    srand(time(NULL));
     begin = clock();    
     minEdgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount); //1 iteration
     gp_Free(&theGraph);
@@ -81,7 +82,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    for(i = 0; i < 100; i++) //figure out how many iterations you need
+    for(i = 0; i < 10; i++) //figure out how many iterations you need
     {
         theGraph = gp_New();
         gp_InitGraph(theGraph, edgesCount);
