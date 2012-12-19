@@ -8,31 +8,82 @@
 #include "fileReader.h" //for loading graph from file
 
 
-int f(graphP * theGraph, int edgesCount)
-{
-    int i;
-    
-    graphP testGraph = gp_DupGraph(*theGraph);
 
+int use(stackP bitset, graphP * theGraph)
+{
+    int j = 0, arcPos;
+    int i = bitset->S[j++];
+    const int DOUBLED_EDGES_COUNT = (*theGraph)->M * 2;
+ 
+    while(i != -1) //hiding edges
+    {
+        arcPos = DOUBLED_EDGES_COUNT + i * 2;
+        gp_HideEdge(*theGraph, arcPos);
+        i = bitset->S[j++];
+    }
+    graphP testGraph = gp_DupGraph(*theGraph);
+    j = 0;
+    i = bitset->S[j++];
+    while(i != -1) //restoring edges
+    {
+        arcPos = DOUBLED_EDGES_COUNT + i * 2;
+        gp_HideEdge(*theGraph, arcPos);
+        gp_RestoreEdge(*theGraph, arcPos);
+        i = bitset->S[j++];
+    }    
+    //checking if graph planar
     if(gp_Embed(testGraph, EMBEDFLAGS_PLANAR) != NONPLANAR)
     {
+        gp_Free(&testGraph);
+        return 1;
+    }
+    else
+    {
+        gp_Free(&testGraph);
         return 0;
     }
+}
 
-    gp_Free(&testGraph);
-    for(i = 0; i < edgesCount; i++)
+
+int go(int length, int start, stackP bitset, int edgesCount, graphP * theGraph)
+{
+    if(!length)
     {
-        gp_HideEdge(*theGraph, 2 * edgesCount + i);
-        testGraph = gp_DupGraph(*theGraph);
-
-        if(gp_Embed(testGraph, EMBEDFLAGS_PLANAR) != NONPLANAR)
+        return use(bitset, theGraph);
+    }
+    int i, tmp = 0;
+    for(i = start; i < edgesCount; i++)
+    {
+        sp_Push(bitset, i);
+        if((tmp = go(length - 1, i + 1, bitset, edgesCount, theGraph) != 0))
         {
-            return 1;
+            return tmp;
         }
-        gp_Free(&testGraph);
-        gp_RestoreEdge(*theGraph, 2 * edgesCount + i);
+        bitset->S[--bitset->Top];
     }
 }
+
+
+int doIt(graphP * theGraph, int edgesCount)
+{
+    stackP st;
+    st = sp_New(edgesCount);
+    int i;
+    for(i = 0; i < edgesCount; i++)
+    {
+        sp_Push(st, -1);
+    }
+    st->Top = 0;
+    int tmp;
+    for(i = 1; i < edgesCount + 1; i++)
+    {
+        if((tmp = go(i, 0, st, edgesCount, theGraph)) != 0)
+        {
+            return i;
+        }
+    }
+}
+
 
 
 /* main 
@@ -64,22 +115,17 @@ int main(int argc, char *argv[])
         gp_AddEdge(theGraph, edgesList[i][0], 0, edgesList[i][1], 0);
     }
 
-    printf("edges which cannot be dropped count - %d\n", f(&theGraph, edgesCount));
-
-    //gp_HideEdge(theGraph, 20016);
-    //gp_RestoreEdge(theGraph, 20016);
-    //printf("%s\n", gp_Embed(theGraph, EMBEDFLAGS_PLANAR) ? "not planar" : "planar");
-
-    /*
     clock_t begin, end;
     double time_spent;
 
     begin = clock();    
     //logic goes here
+    int cr = doIt(&theGraph, edgesCount);
+    printf("edges which cannot be dropped count - %d\n", cr);
     end = clock();
     time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
     printf("time spent - %f\n", time_spent);
-    */
+    
     gp_Free(&theGraph);
     freeMem(edgesList, edgesCount); 
     return 0;
