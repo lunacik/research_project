@@ -1,19 +1,21 @@
 
 /* In this approach we are trying to push as much edges as we can.
- * Result is the minimum number of edges which cause graph to be nonplanar */
+ * Result is the minimum number of edges which cahideEdgesAndTryToEmbed graph to be nonplanar */
 
-#include <stdlib.h>
-#include <time.h>
+#include <stdlib.h> //standard C definitions
+#include <time.h> //for time recording
 #include "graph.h" //from planarity project
 #include "fileReader.h" //for loading graph from file
 
+graphP testGraph;
+int DOUBLED_EDGES_COUNT;
 
 
-int use(stackP bitset, graphP * theGraph)
+/* hiding edges edges and checking if graph becomes planar*/
+int hideEdgesAndTryToEmbed(stackP bitset, graphP * theGraph)
 {
     int j = 0, arcPos;
     int i = bitset->S[j++];
-    const int DOUBLED_EDGES_COUNT = (*theGraph)->M * 2;
  
     while(i != -1) //hiding edges
     {
@@ -21,65 +23,70 @@ int use(stackP bitset, graphP * theGraph)
         gp_HideEdge(*theGraph, arcPos);
         i = bitset->S[j++];
     }
-    graphP testGraph = gp_DupGraph(*theGraph);
+    gp_CopyGraph(testGraph, *theGraph);
     j = 0;
     i = bitset->S[j++];
     while(i != -1) //restoring edges
     {
         arcPos = DOUBLED_EDGES_COUNT + i * 2;
-        gp_HideEdge(*theGraph, arcPos);
         gp_RestoreEdge(*theGraph, arcPos);
         i = bitset->S[j++];
     }    
-    //checking if graph planar
+    //checking if graph is planar
     if(gp_Embed(testGraph, EMBEDFLAGS_PLANAR) != NONPLANAR)
     {
-        gp_Free(&testGraph);
+        //gp_ReinitializeGraph(testGraph);
         return 1;
     }
     else
     {
-        gp_Free(&testGraph);
+        //gp_ReinitializeGraph(testGraph);
         return 0;
     }
 }
 
 
-int go(int length, int start, stackP bitset, int edgesCount, graphP * theGraph)
+/* generating combinations of pairs and calling hide edges routine */
+int generateBitsetAndHideEdges(int length, int start, stackP bitset, graphP * theGraph)
 {
     if(!length)
     {
-        return use(bitset, theGraph);
+        return hideEdgesAndTryToEmbed(bitset, theGraph);
     }
-    int i, tmp = 0;
-    for(i = start; i < edgesCount; i++)
+    int i, retVal = 0;
+    for(i = start; i < (*theGraph)->M; i++)
     {
         sp_Push(bitset, i);
-        if((tmp = go(length - 1, i + 1, bitset, edgesCount, theGraph) != 0))
+        if((retVal = generateBitsetAndHideEdges(length - 1, i + 1, bitset, theGraph) != 0))
         {
-            return tmp;
+            return retVal; //success
         }
         bitset->S[--bitset->Top];
     }
+
+    return 0; //failed
 }
 
 
-int doIt(graphP * theGraph, int edgesCount)
+/* preparint bitset and 
+ * calling generateBitsetAndHideEdges routine from 1 to n times */
+int getMinEdgesFailedToEmbed(graphP * theGraph)
 {
     stackP st;
-    st = sp_New(edgesCount);
+    st = sp_New((*theGraph)->M);
     int i;
-    for(i = 0; i < edgesCount; i++)
+    for(i = 0; i < (*theGraph)->M; i++)
     {
         sp_Push(st, -1);
     }
     st->Top = 0;
-    int tmp;
-    for(i = 1; i < edgesCount + 1; i++)
+    int retVal;
+    for(i = 1; i < (*theGraph)->M + 1; i++)
     {
-        if((tmp = go(i, 0, st, edgesCount, theGraph)) != 0)
+        printf("trying to remove %d edges\n", i);
+        if((retVal = generateBitsetAndHideEdges(i, 0, st, theGraph)) != 0)
         {
-            return i;
+            return i; //minimum count of edges which failed to embed
         }
     }
 }
@@ -87,7 +94,7 @@ int doIt(graphP * theGraph, int edgesCount)
 
 
 /* main 
- * graph is read from a given file as parameter*/
+ * graph is read from a given file as parameter */
 int main(int argc, char *argv[])
 {
     graphP theGraph = gp_New();
@@ -117,10 +124,12 @@ int main(int argc, char *argv[])
 
     clock_t begin, end;
     double time_spent;
-
+    testGraph = gp_New();
+    gp_InitGraph(testGraph, edgesCount);
+    DOUBLED_EDGES_COUNT = edgesCount * 2;
     begin = clock();    
     //logic goes here
-    int cr = doIt(&theGraph, edgesCount);
+    int cr = getMinEdgesFailedToEmbed(&theGraph);
     printf("edges which cannot be dropped count - %d\n", cr);
     end = clock();
     time_spent = (double)(end - begin) / CLOCKS_PER_SEC;

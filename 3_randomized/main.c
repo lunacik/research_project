@@ -3,8 +3,8 @@
  * we try to return as much edges as we can.
  * Result is the minimum number of edges which cause graph to be nonplanar */
 
-#include <stdlib.h>
-#include <time.h>
+#include <stdlib.h> //standard C definitions
+#include <time.h> //for time recording
 #include "graph.h" //from planarity project
 #include "fileReader.h" //for loading graph from file
 #include "randomize.h" //for shuffling edges
@@ -12,7 +12,7 @@
 
 
 /* trying to restore as much edges as we can */
-/* FIXME maybe useless and currently not working  */
+/* FIXME maybe useless and currently not working */
 int restoreEdges(int * randomList, int listSize, graphP * theGraph, int DEC)
 {
     int i, newSize, arcPos;
