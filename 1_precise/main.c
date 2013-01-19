@@ -105,9 +105,9 @@ int main(int argc, char *argv[])
         exit(1);
     }
     
-    int edgesCount, i;
+    int edgesCount, vertexCount, i;
 
-    int ** edgesList = readGraphFromFile(argv[1], &edgesCount);
+    int ** edgesList = readGraphFromFile(argv[1], &edgesCount, &vertexCount);
 
     if(edgesList == NULL)
     {
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    gp_InitGraph(theGraph, edgesCount);
+    gp_InitGraph(theGraph, vertexCount);
    
     for(i = 0; i < edgesCount; i++)
     {

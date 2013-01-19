@@ -7,6 +7,7 @@
 
 /* format of file:
     6
+    15
     1 5 2 -1
     0 3 5 4 1 -1
     3 1 -1
@@ -16,7 +17,7 @@
 */
 
 /* function to load graph from file to list of edges */
-int ** readGraphFromFile(char * fileName, int * edgesCount)
+int ** readGraphFromFile(char * fileName, int * edgesCount, int * vertexCount)
 {
     FILE * file = fopen(fileName, "r");
     int ** edgesList;
@@ -26,9 +27,9 @@ int ** readGraphFromFile(char * fileName, int * edgesCount)
         return NULL;
     }
 
-    int vertexCount, i, j = 0, u, v;
+    int j = 0, u, v;
     fscanf(file, "%d", edgesCount);
-    fscanf(file, "%d", &vertexCount);
+    fscanf(file, "%d", vertexCount);
     
     edgesList = malloc((*edgesCount)*sizeof(int*));
     
@@ -37,20 +38,23 @@ int ** readGraphFromFile(char * fileName, int * edgesCount)
         return NULL;
     }
 
-    for(i = 0; i < vertexCount; i++)
+    while(1)
     {
         fscanf(file, "%d", &u);
+        if(u == -2)
+        {
+            break;
+        }
         fscanf(file, "%d", &v);
-
         while(v != -1)
         {
             edgesList[j] = malloc(2*sizeof(int)); 
             edgesList[j][0] = u;
             edgesList[j++][1] = v;
-
             fscanf(file, "%d", &v);
         }
     }
+    
     fclose(file);
     return edgesList;
 }

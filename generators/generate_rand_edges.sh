@@ -21,7 +21,8 @@ then
     rm $fileName
 fi
 
-echo "$edgesCount " > $fileName
+echo "$edgesCount" > $fileName
+echo "$edgesRange" >> $fileName
 
 
 for (( i=0; i <= $edgesCount; i++ ))

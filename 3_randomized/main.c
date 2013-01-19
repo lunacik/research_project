@@ -86,16 +86,16 @@ int main(int argc, char * argv[])
         exit(1);
     }
     
-    int edgesCount;
+    int edgesCount, vertexCount;
 
-    int ** edgesList = readGraphFromFile(argv[1], &edgesCount);
+    int ** edgesList = readGraphFromFile(argv[1], &edgesCount, &vertexCount);
     if(edgesList == NULL)
     {
         printf("reading from file failed\n");
         exit(1);
     }
 
-    gp_InitGraph(theGraph, edgesCount);
+    gp_InitGraph(theGraph, vertexCount);
     
     int i;
     for(i = 0; i < edgesCount; i++)

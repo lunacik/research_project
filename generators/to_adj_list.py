@@ -8,7 +8,7 @@ fileName = sys.argv[1]
 
 file = open(fileName, "r")
 edges_count = file.readline()
-
+vertex_count = file.readline()
 l = [i[:i.__len__() - 1].split(" ") for i in file.readlines()]
 
 
@@ -33,13 +33,18 @@ for pair in l:
 
 file = open(sys.argv[2], "w")
 
-file.write(edges_count)
 
-file.write(str(uniq_vertices.__len__()) + "\n")
+file.write(edges_count)
+file.write(vertex_count)
 
 for adj in adj_list:
     file.write(adj + " ")
     for a in adj_list[adj]:
         file.write(a + " ")
     file.write("-1\n")
+
+
+file.write("-2\n")
+file.write(str(uniq_vertices.__len__()) + "\n")
+file.close()
 
