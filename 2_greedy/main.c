@@ -57,6 +57,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
     
+    //puts(argv[1]);
     int edgesCount, vertexCount;
 
     int ** edgesList = readGraphFromFile(argv[1], &edgesCount, &vertexCount);
@@ -66,7 +67,6 @@ int main(int argc, char *argv[])
         printf("reading from file failed\n");
         exit(1);
     }
-
     gp_InitGraph(theGraph, vertexCount);
     clock_t begin, end;
     double time_spent;
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
     
-    for(i = 0; i < 10; i++) //figure out how many iterations you need
+    for(i = 0; i < edgesCount; i++) //figure out how many iterations you need
     {
         theGraph = gp_New();
         gp_InitGraph(theGraph, vertexCount);

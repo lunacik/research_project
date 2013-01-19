@@ -30,7 +30,7 @@ extern "C" {
         factor of N, the number of vertices. We allow 3N edges, but this
         number can be safely set to a larger integer value. */
 
-#define EDGE_LIMIT      3
+#define EDGE_LIMIT      10
 
 /* Simple integer selection macros */
 

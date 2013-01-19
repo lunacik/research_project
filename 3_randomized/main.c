@@ -36,27 +36,27 @@ int restoreEdges(int * randomList, int listSize, graphP * theGraph, int DEC)
 
 
 /* removing some random edges from graph and testing if it becomes planar */
-int removeRandomEdges(graphP * theGraph, int edgesCount)
+int removeRandomEdges(graphP * theGraph, int edgesCount, int vertexCount)
 {
     int i, listSize, arcPos;
     int * randomList;
-    const int DOUBLED_EDGES_COUNT = edgesCount * 2;
+    const int DOUBLED_EDGES_COUNT = vertexCount * 2;
     
     randomList = getRandomEdges(&listSize, edgesCount);
-    
+   
     for(i = 0; i < listSize; i++)
     {
         arcPos = DOUBLED_EDGES_COUNT + randomList[i] * 2;
         gp_HideEdge(*theGraph, arcPos);
     }
     graphP testGraph = gp_DupGraph(*theGraph);
-    
+   
     for(i = 0; i < listSize; i++)
     {
         arcPos = DOUBLED_EDGES_COUNT + randomList[i] * 2;
         gp_RestoreEdge(*theGraph, arcPos);
     }   
-    
+   
     free(randomList);
     if(gp_Embed(testGraph, EMBEDFLAGS_PLANAR) == NONPLANAR)
     {
@@ -94,7 +94,7 @@ int main(int argc, char * argv[])
         printf("reading from file failed\n");
         exit(1);
     }
-
+    
     gp_InitGraph(theGraph, vertexCount);
     
     int i;
@@ -119,11 +119,11 @@ int main(int argc, char * argv[])
     //logic goes here
      
     srand(time(NULL));
-    int minEdgesFailedToEmbed = removeRandomEdges(&theGraph, edgesCount); //1 iteration
+    int minEdgesFailedToEmbed = removeRandomEdges(&theGraph, edgesCount, vertexCount); //1 iteration
     int tmp, j;
-    for(i = 0; i < 1000; i++) // figure out how many iterations
+    for(i = 0; i < edgesCount; i++) // figure out how many iterations
     {
-        tmp = removeRandomEdges(&theGraph, edgesCount);
+        tmp = removeRandomEdges(&theGraph, edgesCount, vertexCount);
         minEdgesFailedToEmbed = MIN(tmp, minEdgesFailedToEmbed);
     }
     end = clock();

@@ -23,7 +23,7 @@ int hideEdgesAndTryToEmbed(stackP bitset, graphP * theGraph)
         gp_HideEdge(*theGraph, arcPos);
         i = bitset->S[j++];
     }
-    gp_CopyGraph(testGraph, *theGraph);
+    testGraph = gp_DupGraph(*theGraph);
     j = 0;
     i = bitset->S[j++];
     while(i != -1) //restoring edges
@@ -35,12 +35,12 @@ int hideEdgesAndTryToEmbed(stackP bitset, graphP * theGraph)
     //checking if graph is planar
     if(gp_Embed(testGraph, EMBEDFLAGS_PLANAR) != NONPLANAR)
     {
-        //gp_ReinitializeGraph(testGraph);
+        gp_Free(&testGraph);
         return 1;
     }
     else
     {
-        //gp_ReinitializeGraph(testGraph);
+        gp_Free(&testGraph);
         return 0;
     }
 }
@@ -80,11 +80,11 @@ int getMinEdgesFailedToEmbed(graphP * theGraph)
         sp_Push(st, -1);
     }
     st->Top = 0;
-    int retVal;
+    
     for(i = 1; i < (*theGraph)->M + 1; i++)
     {
         printf("trying to remove %d edges\n", i);
-        if((retVal = generateBitsetAndHideEdges(i, 0, st, theGraph)) != 0)
+        if(generateBitsetAndHideEdges(i, 0, st, theGraph) != 0)
         {
             return i; //minimum count of edges which failed to embed
         }
@@ -122,11 +122,17 @@ int main(int argc, char *argv[])
         gp_AddEdge(theGraph, edgesList[i][0], 0, edgesList[i][1], 0);
     }
 
+    graphP testGraph = gp_DupGraph(theGraph);
+    if (gp_Embed(testGraph, EMBEDFLAGS_PLANAR) != NONPLANAR)
+    {
+        printf("graph is planar\n");
+        exit(0);
+    }
+    gp_Free(&testGraph);
     clock_t begin, end;
     double time_spent;
-    testGraph = gp_New();
-    gp_InitGraph(testGraph, edgesCount);
-    DOUBLED_EDGES_COUNT = edgesCount * 2;
+    
+    DOUBLED_EDGES_COUNT = vertexCount * 2;
     begin = clock();    
     //logic goes here
     int cr = getMinEdgesFailedToEmbed(&theGraph);

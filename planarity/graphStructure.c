@@ -91,7 +91,6 @@ graphP theGraph = (graphP) malloc(sizeof(BM_graph));
 int  gp_InitGraph(graphP theGraph, int N)
 {
 int I;
-
      _ClearGraph(theGraph);
 
 /* Allocate memory as described above */
@@ -113,7 +112,7 @@ int I;
 /* Initialize memory */
 
      theGraph->N = N;
-
+     
      for (I = 0; I < (2+2*EDGE_LIMIT)*N; I++)
           _InitGraphNode(theGraph, I);
 
@@ -845,12 +844,12 @@ int  upos, vpos;
 
      /* We enforce the edge limit */
 
-     if (theGraph->M >= EDGE_LIMIT*theGraph->N)
-         return NONPLANAR;
+     //if (theGraph->M >= EDGE_LIMIT*theGraph->N)
+     //    return NONPLANAR;
 
      vpos = 2*theGraph->N + 2*theGraph->M;
      upos = gp_GetTwinArc(theGraph, vpos);
-
+     printf("vpos - %d\n", vpos);
      _AddArc(theGraph, u, v, vpos, ulink);
      _AddArc(theGraph, v, u, upos, vlink);
      //printf("vpos - %d, upos - %d\n", vpos, upos);
