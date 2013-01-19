@@ -849,7 +849,6 @@ int  upos, vpos;
 
      vpos = 2*theGraph->N + 2*theGraph->M;
      upos = gp_GetTwinArc(theGraph, vpos);
-     printf("vpos - %d\n", vpos);
      _AddArc(theGraph, u, v, vpos, ulink);
      _AddArc(theGraph, v, u, upos, vlink);
      //printf("vpos - %d, upos - %d\n", vpos, upos);

@@ -32,7 +32,7 @@ int tryToEmbed(graphP * theGraph, int ** edgesList, int edgesCount)
     int i;
     int edgesFailedToEmbed = 0;
 
-    for(i = 0; i < edgesCount - 1; i++)
+    for(i = 0; i < edgesCount; i++)
     {
         if(tryToAddEdge(theGraph, edgesList[i][0], edgesList[i][1]) == NONPLANAR)
         {
@@ -68,6 +68,22 @@ int main(int argc, char *argv[])
         exit(1);
     }
     gp_InitGraph(theGraph, vertexCount);
+    
+    graphP testGraph = gp_New();
+    gp_InitGraph(testGraph, vertexCount);
+   
+    for(i = 0; i < edgesCount; i++)
+    {
+        gp_AddEdge(testGraph, edgesList[i][0], 0, edgesList[i][1], 0);
+    }
+
+    if (gp_Embed(testGraph, EMBEDFLAGS_PLANAR) != NONPLANAR)
+    {
+        printf("graph is planar\n");
+        exit(0);
+    }
+    gp_Free(&testGraph);
+
     clock_t begin, end;
     double time_spent;
 
@@ -75,12 +91,12 @@ int main(int argc, char *argv[])
     begin = clock();    
     minEdgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount); //1 iteration
     gp_Free(&theGraph);
-    if(minEdgesFailedToEmbed == 0)
+   /* if(minEdgesFailedToEmbed == 0)
     {
         printf("graph is planar\n");
         exit(0);
     }
-    
+    */
     for(i = 0; i < edgesCount; i++) //figure out how many iterations you need
     {
         theGraph = gp_New();

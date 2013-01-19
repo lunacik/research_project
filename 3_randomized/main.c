@@ -117,8 +117,7 @@ int main(int argc, char * argv[])
 
     begin = clock();    
     //logic goes here
-     
-    srand(time(NULL));
+    srand(time(NULL) + edgesCount + vertexCount);
     int minEdgesFailedToEmbed = removeRandomEdges(&theGraph, edgesCount, vertexCount); //1 iteration
     int tmp, j;
     for(i = 0; i < edgesCount; i++) // figure out how many iterations
