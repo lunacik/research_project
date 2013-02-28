@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
     */
-    for(i = 0; i < edgesCount; i++) //figure out how many iterations you need
+    for(i = 0; i < edgesCount*2; i++) //figure out how many iterations you need
     {
         theGraph = gp_New();
         gp_InitGraph(theGraph, vertexCount);

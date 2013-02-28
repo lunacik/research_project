@@ -13,6 +13,7 @@
 
 /* trying to restore as much edges as we can */
 /* FIXME maybe useless and currently not working */
+/*
 int restoreEdges(int * randomList, int listSize, graphP * theGraph, int DEC)
 {
     int i, newSize, arcPos;
@@ -32,7 +33,7 @@ int restoreEdges(int * randomList, int listSize, graphP * theGraph, int DEC)
     }
     return restoreEdges(randomList, newSize, theGraph, DEC);
 }
-
+*/
 
 
 /* removing some random edges from graph and testing if it becomes planar */
@@ -117,14 +118,16 @@ int main(int argc, char * argv[])
 
     begin = clock();    
     //logic goes here
-    srand(time(NULL) + edgesCount + vertexCount);
+    srand(time(NULL));
     int minEdgesFailedToEmbed = removeRandomEdges(&theGraph, edgesCount, vertexCount); //1 iteration
     int tmp, j;
     for(i = 0; i < edgesCount; i++) // figure out how many iterations
     {
-        tmp = removeRandomEdges(&theGraph, edgesCount, vertexCount);
+        tmp = removeRandomEdges(&theGraph, minEdgesFailedToEmbed, vertexCount);
         minEdgesFailedToEmbed = MIN(tmp, minEdgesFailedToEmbed);
+        printf("mefte - %d\n", minEdgesFailedToEmbed);
     }
+
     end = clock();
 
     printf("Minimum count of edges which failed to embed - %d\n", 

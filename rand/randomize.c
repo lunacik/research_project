@@ -28,7 +28,7 @@ void shuffleEdges(int ** edgesList, int edgesCount)
 /* generating list random of indexes of random size */
 int * getRandomEdges(int * listSize, int edgesCount)
 {
-    *listSize = random() % edgesCount; //maybe some range will be more efficient
+    *listSize = random() % edgesCount + 1; //maybe some range will be more efficient
     int i, j, tmp, unique = 1;
     int * list = malloc(*listSize * sizeof(int));
     for(i = 0; i < *listSize; i++)
