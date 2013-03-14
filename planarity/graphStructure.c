@@ -52,7 +52,7 @@ void _HideArc(graphP theGraph, int arcPos);
 
 graphP gp_New()
 {
-graphP theGraph = (graphP) malloc(sizeof(BM_graph));
+     graphP theGraph = malloc(sizeof(BM_graph));
 
      if (theGraph != NULL)
      {

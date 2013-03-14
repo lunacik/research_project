@@ -13,6 +13,7 @@
 
 /* trying to restore as much edges as we can */
 /* FIXME maybe useless and currently not working */
+/*
 int restoreEdges(int * randomList, int listSize, graphP * theGraph, int DEC)
 {
     int i, newSize, arcPos;
@@ -32,7 +33,7 @@ int restoreEdges(int * randomList, int listSize, graphP * theGraph, int DEC)
     }
     return restoreEdges(randomList, newSize, theGraph, DEC);
 }
-
+*/
 
 
 /* removing some random edges from graph and testing if it becomes planar */
@@ -43,7 +44,7 @@ int removeRandomEdges(graphP * theGraph, int edgesCount, int vertexCount)
     const int DOUBLED_EDGES_COUNT = vertexCount * 2;
     
     randomList = getRandomEdges(&listSize, edgesCount);
-   
+
     for(i = 0; i < listSize; i++)
     {
         arcPos = DOUBLED_EDGES_COUNT + randomList[i] * 2;
@@ -115,14 +116,15 @@ int main(int argc, char * argv[])
     clock_t begin, end;
     double time_spent;
 
+    srand(time(NULL));
+    
     begin = clock();    
     //logic goes here
-    srand(time(NULL) + edgesCount + vertexCount);
     int minEdgesFailedToEmbed = removeRandomEdges(&theGraph, edgesCount, vertexCount); //1 iteration
     int tmp, j;
     for(i = 0; i < edgesCount; i++) // figure out how many iterations
     {
-        tmp = removeRandomEdges(&theGraph, edgesCount, vertexCount);
+        tmp = removeRandomEdges(&theGraph, minEdgesFailedToEmbed, vertexCount);
         minEdgesFailedToEmbed = MIN(tmp, minEdgesFailedToEmbed);
     }
     end = clock();

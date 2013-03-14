@@ -6,6 +6,7 @@
 
 
 int ** readGraphFromFile(char * fileName, int * edgesCount, int * vertexCount);
+void freeMem(int ** edgesList, int edgesCount);
 
 
 #endif

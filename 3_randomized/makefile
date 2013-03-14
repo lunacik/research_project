@@ -1,15 +1,20 @@
 
-randomized: main.c fileReader.o randomize.o ../planarity/*.c ../planarity/*.h ../file_reader/*.h
-	gcc main.c fileReader.o randomize.o -o randomized ../planarity/*.c -I../planarity -I../file_reader -I../rand
+O=-O2
+BIN=randomized
+ULIB=../utils/
+PLIB=../planarity/
+
+$(BIN): main.c fileReader.o randomize.o $(PLIB)*.c $(PLIB)*.h $(ULIB)*.h
+	$(CC) $(O) main.c fileReader.o randomize.o -o $(BIN) $(PLIB)*.c -I$(PLIB) -I$(ULIB)
 
 
-fileReader.o: ../file_reader/fileReader.c
-	gcc -c ../file_reader/fileReader.c
+fileReader.o: $(ULIB)fileReader.c
+	$(CC) $(O) -c $(ULIB)fileReader.c
 
 
-randomize.o: ../rand/randomize.c
-	gcc -c ../rand/randomize.c
+randomize.o: $(ULIB)randomize.c
+	$(CC) $(O) -c $(ULIB)randomize.c
 
-
-clean: *.o randomized
-	rm randomized *.o
+#.PHONY:
+clean: *.o $(BIN)
+	rm $(BIN) *.o
