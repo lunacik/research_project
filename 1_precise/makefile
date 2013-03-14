@@ -3,7 +3,8 @@ CC=gcc
 O=-O2
 BIN=precise
 ULIB=../utils/
-PLIB=../planarity/
+#PLIB=../planarity/
+PLIB=/home/lunacik/planarity-read-only/c/
 
 $(BIN): main.c fileReader.o $(PLIB)*.c $(PLIB)*.h $(ULIB)*.h
 	$(CC) $(O) main.c fileReader.o -o $(BIN) $(PLIB)*.c -I$(PLIB) -I$(ULIB)

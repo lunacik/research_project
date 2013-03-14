@@ -9,7 +9,7 @@ DEBUG=-g
 W=-Wall
 
 $(BIN): main.c fileReader.o randomize.o $(PLIB)*.c $(PLIB)*.h $(ULIB)*.h
-	$(CC) $(O) $(DEBUG) $(W)  main.c fileReader.o randomize.o -o $(BIN) $(PLIB)*.c -I$(PLIB) -I$(ULIB)
+	$(CC) $(O) $(DEBUG) $(W) main.c fileReader.o randomize.o -o $(BIN) $(PLIB)*.c -I$(PLIB) -I$(ULIB)
 
 
 fileReader.o: $(ULIB)fileReader.c

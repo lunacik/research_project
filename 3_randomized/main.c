@@ -129,7 +129,7 @@ int main(int argc, char * argv[])
     }
     end = clock();
 
-    printf("Minimum count of edges which failed to embed - %d\n", 
+    printf("count of edges which failed to embed - %d\n", 
             minEdgesFailedToEmbed);
 
     time_spent = (double)(end - begin) / CLOCKS_PER_SEC;

@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
     begin = clock();    
     //logic goes here
     int cr = getMinEdgesFailedToEmbed(&theGraph);
-    printf("edges which cannot be dropped count - %d\n", cr);
+    printf("count of edges which failed to embed - %d\n", cr);
     end = clock();
     time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
     printf("time spent - %f\n", time_spent);
