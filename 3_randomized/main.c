@@ -8,7 +8,7 @@
 #include "graph.h" //from planarity project
 #include "fileReader.h" //for loading graph from file
 #include "randomize.h" //for shuffling edges
-
+#include "tools.h"
 
 
 /* trying to restore as much edges as we can */

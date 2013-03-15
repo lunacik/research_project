@@ -7,6 +7,7 @@
 #include "graph.h" //from planarity project
 #include "fileReader.h" //for loading graph from file
 #include "randomize.h" //for shuffling edges
+#include "tools.h"
 
 //#define SPEED_MACROS
 //#define NONPLANAR NONEMBEDDABLE
@@ -43,7 +44,6 @@ int tryToEmbed(graphP theGraph, int ** edgesList, int edgesCount, int * edgesInd
         {
             edgesIndexes[edgesFailedToEmbed] = i;
             edgesFailedToEmbed++;
-            //sp_Push(stack1, i);
         }
     }
     return edgesFailedToEmbed;
@@ -73,23 +73,28 @@ int main(int argc, char *argv[])
         printf("reading from file failed\n");
         exit(1);
     }
-    //gp_InitGraph(theGraph, vertexCount);
-    /* 
+    
+    
     graphP testGraph = gp_New();
-    gp_InitGraph(testGraph, vertexCount);
+    gp_InitGraph(testGraph, vertexCount + 1 + 1);
    
     for(i = 0; i < edgesCount; i++)
     {
         gp_AddEdge(testGraph, edgesList[i][0], 0, edgesList[i][1], 0);
+        //printf("%d %d %d\n", i, edgesList[i][0], edgesList[i][1]);
     }
 
+    testGraph = planarize_two_edges(testGraph, 3, 0, 4, 11, 2, 5);
+    
     if (gp_Embed(testGraph, EMBEDFLAGS_PLANAR) != NONPLANAR)
     {
         printf("graph is planar\n");
         exit(0);
     }
     gp_Free(&testGraph);
-    */
+  
+    /*
+
     clock_t begin, end;
     double time_spent;
 
@@ -106,7 +111,6 @@ int main(int argc, char *argv[])
     {
         theGraph = gp_New();
         gp_InitGraph(theGraph, vertexCount);
-     
         shuffleEdges(edgesList, edgesCount);
         edgesFailedToEmbed = tryToEmbed(theGraph, edgesList, edgesCount, edgesIndexes);
         
@@ -140,11 +144,15 @@ int main(int argc, char *argv[])
        free(edges[i]); 
     }
     free(edges);
+
     printf("count of edges which failed to embed - %d\n", 
             minEdgesFailedToEmbed);
 
     free(edgesIndexes); 
     freeMem(edgesList, edgesCount); 
+
+    */
+
     return 0;
 }
 

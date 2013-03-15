@@ -60,14 +60,3 @@ int ** readGraphFromFile(char * fileName, int * edgesCount, int * vertexCount)
 }
 
 
-/* freeing allocated memory for edges */
-void freeMem(int ** edgesList, int edgesCount)
-{
-    int i;
-    for(i = 0; i < edgesCount; i++)
-    {
-        free(edgesList[i]);
-    }
-    free(edgesList);
-}
-

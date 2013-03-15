@@ -8,8 +8,8 @@ PLIB=../planarity/
 DEBUG=-g
 W=-Wall
 
-$(BIN): main.c fileReader.o randomize.o $(PLIB)*.c $(PLIB)*.h $(ULIB)*.h
-	$(CC) $(O) $(DEBUG) $(W) main.c fileReader.o randomize.o -o $(BIN) $(PLIB)*.c -I$(PLIB) -I$(ULIB)
+$(BIN): main.c fileReader.o randomize.o tools.o $(PLIB)*.c $(PLIB)*.h $(ULIB)*.h
+	$(CC) $(O) $(DEBUG) $(W) main.c fileReader.o randomize.o tools.o -o $(BIN) $(PLIB)*.c -I$(PLIB) -I$(ULIB)
 
 
 fileReader.o: $(ULIB)fileReader.c
@@ -18,6 +18,10 @@ fileReader.o: $(ULIB)fileReader.c
 
 randomize.o: $(ULIB)randomize.c
 	$(CC) $(W) -c $(O) $(DEBUG) $(ULIB)randomize.c
+
+
+tools.o: $(ULIB)tools.c $(PLIB)
+	$(CC) $W -c $(O) $(DEBUG) $(ULIB)tools.c -I$(PLIB)
 
 
 clean: *.o $(BIN)

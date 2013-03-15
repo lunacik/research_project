@@ -6,6 +6,7 @@
 #include <time.h> //for time recording
 #include "graph.h" //from planarity project
 #include "fileReader.h" //for loading graph from file
+#include "tools.h"
 
 graphP testGraph;
 int DOUBLED_EDGES_COUNT;
