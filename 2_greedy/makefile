@@ -1,15 +1,28 @@
 
-greedy: main.c fileReader.o randomize.o ../planarity/*.c ../planarity/*.h ../file_reader/*.h
-	gcc -O2 main.c fileReader.o randomize.o -o greedy ../planarity/*.c -I../planarity -I../file_reader -I../rand
+CC=gcc
+O=-O0
+BIN=greedy
+ULIB=../utils/
+PLIB=../planarity/
+#PLIB=/home/lunacik/planarity-read-only/c/
+DEBUG=-g
+W=-Wall
+
+$(BIN): main.c fileReader.o randomize.o tools.o $(PLIB)*.c $(PLIB)*.h $(ULIB)*.h
+	$(CC) $(O) $(DEBUG) $(W) main.c fileReader.o randomize.o tools.o -o $(BIN) $(PLIB)*.c -I$(PLIB) -I$(ULIB)
 
 
-fileReader.o: ../file_reader/fileReader.c
-	gcc -c -O2 ../file_reader/fileReader.c
+fileReader.o: $(ULIB)fileReader.c
+	$(CC) $(W) -c $(O) $(DEBUG) $(ULIB)fileReader.c
 
 
-randomize.o: ../rand/randomize.c
-	gcc -c -O2 ../rand/randomize.c
+randomize.o: $(ULIB)randomize.c
+	$(CC) $(W) -c $(O) $(DEBUG) $(ULIB)randomize.c
 
 
-clean: *.o greedy
-	rm greedy *.o
+tools.o: $(ULIB)tools.c $(PLIB)
+	$(CC) $W -c $(O) $(DEBUG) $(ULIB)tools.c -I$(PLIB)
+
+
+clean: *.o $(BIN)
+	rm $(BIN) *.o

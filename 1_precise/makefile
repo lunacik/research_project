@@ -1,11 +1,24 @@
 
-precise: main.c fileReader.o ../planarity/*.c ../planarity/*.h ../file_reader/*.h
-	gcc -O2 main.c fileReader.o -o precise ../planarity/*.c -I../planarity -I../file_reader
+CC=gcc
+O=-O2
+BIN=precise
+ULIB=../utils/
+PLIB=../planarity/
+#PLIB=/home/lunacik/planarity-read-only/c/
+DEBUG=
 
 
-fileReader.o: ../file_reader/fileReader.c
-	gcc -c -O2 ../file_reader/fileReader.c
+$(BIN): main.c fileReader.o tools.o $(PLIB)*.c $(PLIB)*.h $(ULIB)*.h
+	$(CC) $(O) main.c fileReader.o tools.o -o $(BIN) $(PLIB)*.c -I$(PLIB) -I$(ULIB)
 
 
-clean: *.o precise
-	rm precise *.o
+fileReader.o: $(ULIB)fileReader.c
+	$(CC) -c $(O) $(ULIB)fileReader.c
+
+
+tools.o: $(ULIB)tools.c $(PLIB)
+	$(CC) $W -c $(O) $(DEBUG) $(ULIB)tools.c -I$(PLIB)
+
+
+clean: *.o $(BIN)
+	rm $(BIN) *.o

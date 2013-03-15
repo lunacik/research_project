@@ -6,6 +6,7 @@
 #include <time.h> //for time recording
 #include "graph.h" //from planarity project
 #include "fileReader.h" //for loading graph from file
+#include "tools.h"
 
 graphP testGraph;
 int DOUBLED_EDGES_COUNT;
@@ -136,7 +137,7 @@ int main(int argc, char *argv[])
     begin = clock();    
     //logic goes here
     int cr = getMinEdgesFailedToEmbed(&theGraph);
-    printf("edges which cannot be dropped count - %d\n", cr);
+    printf("count of edges which failed to embed - %d\n", cr);
     end = clock();
     time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
     printf("time spent - %f\n", time_spent);

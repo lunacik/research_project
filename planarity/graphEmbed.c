@@ -795,9 +795,9 @@ int  nextVertex;
 
 void _WalkDown(graphP theEmbedding, int I, int RootVertex)
 {
-int  W, WPrevLink, R, Rout, X, XPrevLink, Y, YPrevLink, RootSide, RootEdgeChild;
+int  W, WPrevLink, R, Rout, X, XPrevLink, Y, YPrevLink, RootSide;//, RootEdgeChild;
 
-     RootEdgeChild = RootVertex - theEmbedding->N;
+     //RootEdgeChild = RootVertex - theEmbedding->N;
 
      sp_ClearStack(theEmbedding->theStack);
 
@@ -1040,6 +1040,8 @@ int N, I, J, W, child, RetVal;
     /* Return indication of whether the graph is planar or non-planar. */
 
     return RetVal;
+
+    return 0;
 }
 
 /********************************************************************

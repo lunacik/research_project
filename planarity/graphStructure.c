@@ -52,7 +52,7 @@ void _HideArc(graphP theGraph, int arcPos);
 
 graphP gp_New()
 {
-graphP theGraph = (graphP) malloc(sizeof(BM_graph));
+     graphP theGraph = malloc(sizeof(BM_graph));
 
      if (theGraph != NULL)
      {
@@ -374,8 +374,8 @@ int I;
      if (dstGraph == NULL || srcGraph == NULL)
          return NOTOK;
 
-     if (dstGraph->N != srcGraph->N)
-         return NOTOK;
+     //if (dstGraph->N != srcGraph->N)
+     //    return NOTOK;
      
      for (I = 0; I < (2+2*EDGE_LIMIT)*srcGraph->N; I++)
           dstGraph->G[I] = srcGraph->G[I];
@@ -390,7 +390,7 @@ int I;
          dstGraph->extFace[I].inversionFlag = srcGraph->extFace[I].inversionFlag;
      }
 
-     dstGraph->N = srcGraph->N;
+     //dstGraph->N = srcGraph->N;
      dstGraph->M = srcGraph->M;
      dstGraph->internalFlags = srcGraph->internalFlags;
      //dstGraph->embedFlags = srcGraph->embedFlags;
@@ -835,7 +835,7 @@ void _AddArc(graphP theGraph, int u, int v, int arcPos, int link)
 
  ********************************************************************/
 
-int  gp_AddEdge(graphP theGraph, int u, int ulink, int v, int vlink)
+int gp_AddEdge(graphP theGraph, int u, int ulink, int v, int vlink)
 {
 int  upos, vpos;
 
@@ -851,7 +851,7 @@ int  upos, vpos;
      upos = gp_GetTwinArc(theGraph, vpos);
      _AddArc(theGraph, u, v, vpos, ulink);
      _AddArc(theGraph, v, u, upos, vlink);
-     //printf("vpos - %d, upos - %d\n", vpos, upos);
+     printf("vpos - %d, upos - %d\n", vpos, upos);
      theGraph->M++;
      return OK;
 }
