@@ -30,7 +30,7 @@ int * getRandomEdges(int * listSize, int edgesCount)
 {
     *listSize = random() % edgesCount + 1; //maybe some range will be more efficient
     int i, j, tmp, unique = 1;
-    int * list = malloc(*listSize * sizeof(int));
+    int * list = (int*)malloc(*listSize * sizeof(int));
     for(i = 0; i < *listSize; i++)
     {
         tmp = random() % edgesCount;
@@ -61,7 +61,7 @@ int * getRandomEdgesFromList(int * list, int listSize, int * newListSize)
 {
     //srand(time(NULL));
     *newListSize = rand() % listSize; //size can be same as initial list or zero - flaw or pros?
-    int * newList = malloc(*newListSize * sizeof(int));
+    int * newList = (int*)malloc(*newListSize * sizeof(int));
     int i, j, tmp, unique = 1;
     for(i = 0; i < *newListSize; i++)
     {

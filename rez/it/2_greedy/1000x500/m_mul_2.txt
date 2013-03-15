@@ -1,2 +1,0 @@
-time spent - 709.360000
-Minimum count of edges which failed to embed - 415

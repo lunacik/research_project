@@ -2,8 +2,8 @@
 /* fileReader.h implementation file */
 
 #include "fileReader.h"
-#include "stdlib.h"
-#include "stdio.h"
+#include <cstdlib>
+#include <cstdio>
 
 /* format of file:
     6
@@ -14,6 +14,7 @@
     2 3 0 4 5 -1
     5 3 4 -1
     4 1 3 -1
+    -2
 */
 
 /* function to load graph from file to list of edges */
@@ -31,7 +32,8 @@ int ** readGraphFromFile(char * fileName, int * edgesCount, int * vertexCount)
     if(fscanf(file, "%d", edgesCount));
     if(fscanf(file, "%d", vertexCount));
     
-    edgesList = malloc((*edgesCount)*sizeof(int*));
+    edgesList = (int**)malloc((*edgesCount)*sizeof(int*));
+    //edgesList = new int*[20];
     
     if(!edgesList)
     {
@@ -48,7 +50,8 @@ int ** readGraphFromFile(char * fileName, int * edgesCount, int * vertexCount)
         if(fscanf(file, "%d", &v));
         while(v != -1)
         {
-            edgesList[j] = malloc(2*sizeof(int)); 
+            edgesList[j] = (int*)malloc(2*sizeof(int));
+            //edgesList[j] = new int[2];
             edgesList[j][0] = u;
             edgesList[j++][1] = v;
             if(fscanf(file, "%d", &v));

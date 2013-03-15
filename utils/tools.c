@@ -4,6 +4,8 @@
 #include "tools.h"
 #include "stdlib.h"
 
+/*
+
 
 graphP planarize_two_edges(graphP theGraph, int i1, int u1, int v1, int i2, int u2, int v2)
 {
@@ -28,7 +30,7 @@ graphP planarize_two_edges(graphP theGraph, int i1, int u1, int v1, int i2, int 
     gp_AddEdge(newGraph, v2, newVertex, 0, 0);
     return newGraph;
 }
-
+*/
 
 
 /* freeing allocated memory for edges */

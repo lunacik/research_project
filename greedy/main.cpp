@@ -3,24 +3,35 @@
  * Result is the minimum number of edges which cause graph to be nonplanar */
 
 #include <stdlib.h>
+#include <cstdio>
 #include <time.h>
-#include "graph.h" //from planarity project
 #include "fileReader.h" //for loading graph from file
 #include "randomize.h" //for shuffling edges
 #include "tools.h"
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/boyer_myrvold_planar_test.hpp>
+
+
+#define MIN(a,b) (((a)<(b))?(a):(b))
+
+using namespace boost;
+
+typedef adjacency_list<vecS, vecS, undirectedS, property<vertex_index_t, int> > graphP;
+
 
 /* if edge doesn't affect on graph planarity, then it will be added
  * otherwise it won't. Returns wheter failed or not to add an edge */
+
+
 int tryToAddEdge(graphP * theGraph, int u, int v)
 {
-    graphP testGraph = gp_DupGraph(*theGraph);
-    gp_AddEdge(testGraph, u, 0, v, 0);
-    int result = gp_Embed(testGraph, EMBEDFLAGS_PLANAR);
-    if(result != NONPLANAR)
+    add_edge(u, v, *theGraph);
+    int result = boyer_myrvold_planarity_test(*theGraph);
+    if(!result)
     {
-        gp_AddEdge(*theGraph, u, 0, v, 0);
+        remove_edge(u, v, *theGraph);
     }
-    gp_Free(&testGraph);
+    
     return result;
 }
 
@@ -34,7 +45,7 @@ int tryToEmbed(graphP * theGraph, int ** edgesList, int edgesCount)
 
     for(i = 0; i < edgesCount; i++)
     {
-        if(tryToAddEdge(theGraph, edgesList[i][0], edgesList[i][1]) == NONPLANAR)
+        if(!tryToAddEdge(theGraph, edgesList[i][0], edgesList[i][1]))
         {
             edgesFailedToEmbed++;
         }
@@ -48,7 +59,6 @@ int tryToEmbed(graphP * theGraph, int ** edgesList, int edgesCount)
  * graph is read from a given file as parameter */
 int main(int argc, char *argv[])
 {
-    graphP theGraph = gp_New();
     int i, minEdgesFailedToEmbed, edgesFailedToEmbed;
 
     if(argc < 2)
@@ -67,8 +77,8 @@ int main(int argc, char *argv[])
         printf("reading from file failed\n");
         exit(1);
     }
-    gp_InitGraph(theGraph, vertexCount);
     
+    /* 
     graphP testGraph = gp_New();
     gp_InitGraph(testGraph, vertexCount);
    
@@ -83,6 +93,9 @@ int main(int argc, char *argv[])
         exit(0);
     }
     gp_Free(&testGraph);
+    */
+
+    graphP theGraph(vertexCount);
 
     clock_t begin, end;
     double time_spent;
@@ -90,23 +103,15 @@ int main(int argc, char *argv[])
     srand(time(NULL));
     begin = clock();    
     minEdgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount); //1 iteration
-    gp_Free(&theGraph);
-   /* if(minEdgesFailedToEmbed == 0)
+    
+    for(i = 0; i < edgesCount; i++) //figure out how many iterations you need
     {
-        printf("graph is planar\n");
-        exit(0);
-    }
-    */
-    for(i = 0; i < edgesCount*2; i++) //figure out how many iterations you need
-    {
-        theGraph = gp_New();
-        gp_InitGraph(theGraph, vertexCount);
+        theGraph = graphP(vertexCount);
         shuffleEdges(edgesList, edgesCount);
         edgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount);
         minEdgesFailedToEmbed = MIN(minEdgesFailedToEmbed, edgesFailedToEmbed);
-        gp_Free(&theGraph);
     }
-
+    
     end = clock();
     time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
     printf("time spent - %f\n", time_spent);
@@ -114,7 +119,6 @@ int main(int argc, char *argv[])
     printf("Minimum count of edges which failed to embed - %d\n", 
             minEdgesFailedToEmbed);
     
-    gp_Free(&theGraph);
     freeMem(edgesList, edgesCount); 
     return 0;
 }
