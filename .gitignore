@@ -1,6 +1,6 @@
-*.o
+*/*.o
 *.swo
 *.swp
-randomized
-greedy
-precise
+*/randomized
+*/greedy
+*/precise
