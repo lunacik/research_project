@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <cstdio>
 #include <time.h>
+#include "graph.h"
 #include "fileReader.h" //for loading graph from file
 #include "randomize.h" //for shuffling edges
 #include "tools.h"
@@ -13,10 +14,6 @@
 
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
-
-using namespace boost;
-
-typedef adjacency_list<vecS, vecS, undirectedS, property<vertex_index_t, int> > graphP;
 
 
 /* if edge doesn't affect on graph planarity, then it will be added
@@ -67,7 +64,6 @@ int main(int argc, char *argv[])
         exit(1);
     }
     
-    //puts(argv[1]);
     int edgesCount, vertexCount;
 
     int ** edgesList = readGraphFromFile(argv[1], &edgesCount, &vertexCount);
@@ -77,24 +73,31 @@ int main(int argc, char *argv[])
         printf("reading from file failed\n");
         exit(1);
     }
-    
     /* 
-    graphP testGraph = gp_New();
-    gp_InitGraph(testGraph, vertexCount);
+    graphP testGraph(0);
    
     for(i = 0; i < edgesCount; i++)
     {
-        gp_AddEdge(testGraph, edgesList[i][0], 0, edgesList[i][1], 0);
+        add_edge(edgesList[i][0], edgesList[i][1], testGraph);
     }
-
-    if (gp_Embed(testGraph, EMBEDFLAGS_PLANAR) != NONPLANAR)
+    
+    planarize_two_edges(&testGraph, 0, 5, 1, 2, 7);
+    planarize_two_edges(&testGraph, 0, 3, 1, 4, 8);
+    planarize_two_edges(&testGraph, 0, 6, 1, 5, 9);
+    planarize_two_edges(&testGraph, 1, 3, 0, 2, 10);
+    planarize_two_edges(&testGraph, 1, 6, 0, 4, 11);
+    planarize_two_edges(&testGraph, 3, 4, 0, 1, 12);
+    
+    planarize_two_edges(&testGraph, 3, 4, 0, 1, 12);
+    planarize_two_edges(&testGraph, 3, 4, 0, 1, 12);
+    planarize_two_edges(&testGraph, 3, 4, 0, 1, 12);
+    
+    if (boyer_myrvold_planarity_test(testGraph))
     {
         printf("graph is planar\n");
         exit(0);
     }
-    gp_Free(&testGraph);
     */
-
     graphP theGraph(vertexCount);
 
     clock_t begin, end;
@@ -109,6 +112,7 @@ int main(int argc, char *argv[])
         theGraph = graphP(vertexCount);
         shuffleEdges(edgesList, edgesCount);
         edgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount);
+        printf("%d\n", edgesFailedToEmbed);
         minEdgesFailedToEmbed = MIN(minEdgesFailedToEmbed, edgesFailedToEmbed);
     }
     

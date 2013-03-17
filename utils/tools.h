@@ -3,9 +3,9 @@
 #define TOOLS_H
 
 
-//#include "graph.h"
+#include "graph.h"
 
-//graphP planarize_two_edges(graphP theGraph, int i1, int u1, int v1, int i2, int u2, int v2);
+void planarize_two_edges(graphP * theGraph, int u1, int v1, int u2, int v2, int newVertex);
 void freeMem(int ** edgesList, int edgesCount);
 
 

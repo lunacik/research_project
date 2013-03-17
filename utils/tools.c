@@ -4,33 +4,17 @@
 #include "tools.h"
 #include "stdlib.h"
 
-/*
 
-
-graphP planarize_two_edges(graphP theGraph, int i1, int u1, int v1, int i2, int u2, int v2)
+void planarize_two_edges(graphP * theGraph, int u1, int v1, int u2, int v2, int newVertex)
 {
-    graphP newGraph = gp_DupGraph(theGraph);
-    //graphP newGraph = gp_New();
-    //gp_InitGraph(newGraph, theGraph->N);
-    //gp_CopyGraph(newGraph, theGraph);
-    // newGraph->N = theGraph->N + 1;
-    int DOUBLED_VERTEX_COUNT = theGraph->N * 2;   
-    int arcPos1 = DOUBLED_VERTEX_COUNT + i1 * 2;
-    int arcPos2 = DOUBLED_VERTEX_COUNT + i2 * 2;
-    
-    gp_HideEdge(newGraph, arcPos1);
-    gp_HideEdge(newGraph, arcPos2);
-    
-    int newVertex = newGraph->N - 1;
-    printf("%d\n", newVertex);
-   
-    gp_AddEdge(newGraph, u1, newVertex, 0, 0); 
-    gp_AddEdge(newGraph, v1, newVertex, 0, 0);
-    gp_AddEdge(newGraph, u2, newVertex, 0, 0);
-    gp_AddEdge(newGraph, v2, newVertex, 0, 0);
-    return newGraph;
+	remove_edge(u1, v1, *theGraph);
+	remove_edge(u2, v2, *theGraph);
+
+    add_edge(u1, newVertex, *theGraph); 
+    add_edge(v1, newVertex, *theGraph); 
+    add_edge(u2, newVertex, *theGraph);
+    add_edge(v2, newVertex, *theGraph);
 }
-*/
 
 
 /* freeing allocated memory for edges */

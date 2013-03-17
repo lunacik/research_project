@@ -1,9 +1,5 @@
-Reseach project at Vilnius University. Main idea is to find graphs minimum crossing number using some heruistics. There are three different approaches - 
-1. precise
-2. greedy
-3. randomized
+Reseach project at Vilnius University. Main idea is to find graphs minimum crossing number using some heruistics.
 
-For planarity testing using planarity project:
-http://code.google.com/p/planarity/
+For planarity testing using boost boyer_myrvold planarity test.
 
-Programming language - C.
+Programming language - C++.

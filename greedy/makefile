@@ -1,9 +1,9 @@
 
 CC=g++
-O=-O0
+O=-O2
 BIN=greedy
 ULIB=../utils/
-DEBUG=-g
+DEBUG=
 W=-Wall
 PIPE=
 
