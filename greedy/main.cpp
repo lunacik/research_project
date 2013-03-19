@@ -11,7 +11,7 @@
 #include "tools.h"
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
-
+#include <tuple>
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
@@ -35,7 +35,7 @@ int tryToAddEdge(graphP * theGraph, int u, int v)
 
 /* trying to add as much edges as it can while preserving planarity.
  * Returns the number of edges which were unable to add */
-int tryToEmbed(graphP * theGraph, int ** edgesList, int edgesCount)
+int tryToEmbed(graphP * theGraph, int ** edgesList, int edgesCount, int * failedEdgesList)
 {
     int i;
     int edgesFailedToEmbed = 0;
@@ -45,6 +45,7 @@ int tryToEmbed(graphP * theGraph, int ** edgesList, int edgesCount)
         if(!tryToAddEdge(theGraph, edgesList[i][0], edgesList[i][1]))
         {
             edgesFailedToEmbed++;
+            failedEdgesList[edgesFailedToEmbed] = i;
         }
     }
     return edgesFailedToEmbed;
@@ -56,7 +57,7 @@ int tryToEmbed(graphP * theGraph, int ** edgesList, int edgesCount)
  * graph is read from a given file as parameter */
 int main(int argc, char *argv[])
 {
-    int i, minEdgesFailedToEmbed, edgesFailedToEmbed;
+    int i, j, minEdgesFailedToEmbed, edgesFailedToEmbed;
 
     if(argc < 2)
     {
@@ -99,20 +100,33 @@ int main(int argc, char *argv[])
     }
     */
     graphP theGraph(vertexCount);
+    
+    typedef std::pair<int, int> edge;
+
+    edge e1(1, 2);
+    edge e2(1, 2);
+    
+    edge edgesFailedToEmbedList[edgesCount];
+
+    int * failedToEmbedIndexes = (int*)malloc(edgesCount * sizeof(int));
 
     clock_t begin, end;
     double time_spent;
 
     srand(time(NULL));
     begin = clock();    
-    minEdgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount); //1 iteration
+    minEdgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount, failedToEmbedIndexes);
     
-    for(i = 0; i < edgesCount; i++) //figure out how many iterations you need
+    for(i = 0; i < edgesCount - 1; i++) //figure out how many iterations you need
     {
         theGraph = graphP(vertexCount);
         shuffleEdges(edgesList, edgesCount);
-        edgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount);
-        printf("%d\n", edgesFailedToEmbed);
+        edgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount, failedToEmbedIndexes);
+        for(j = 0; j < edgesFailedToEmbed; j++)
+        {
+            edgesFailedToEmbedList[j] = edge(edgesList[failedToEmbedIndexes[j]][0], 
+                    edgesList[failedToEmbedIndexes[j]][1]);
+        }
         minEdgesFailedToEmbed = MIN(minEdgesFailedToEmbed, edgesFailedToEmbed);
     }
     
@@ -122,7 +136,12 @@ int main(int argc, char *argv[])
 
     printf("Minimum count of edges which failed to embed - %d\n", 
             minEdgesFailedToEmbed);
-    
+   
+    for(j = 0; j < minEdgesFailedToEmbed; j++)
+    {
+        //printf("%d %d\n", edgesFailedToEmbedList[j].first, edgesFailedToEmbedList[j].second);
+    }
+
     freeMem(edgesList, edgesCount); 
     return 0;
 }
