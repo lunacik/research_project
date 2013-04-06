@@ -7,7 +7,7 @@ DEBUG=
 W=-Wall
 PIPE=-std=gnu++11
 
-$(BIN): main.cpp fileReader.o randomize.o tools.o $(ULIB)*.h
+all: main.cpp fileReader.o randomize.o tools.o $(ULIB)*.h
 	$(CC) $(O) $(DEBUG) $(W) $(PIPE) main.cpp fileReader.o randomize.o tools.o -o $(BIN) -I$(ULIB)
 
 
