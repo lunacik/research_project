@@ -1,5 +1,7 @@
 
 #include <boost/test/unit_test.hpp>
+#include <vector>
+#include <algorithm>
 
 /*
 BOOST_AUTO_TEST_CASE( my_test )
@@ -21,3 +23,21 @@ BOOST_AUTO_TEST_CASE( my_test )
   BOOST_CHECK_EQUAL( add( 2,2 ), 4 );      // #7 continues on error
 }
 */
+
+BOOST_AUTO_TEST_CASE( my_test )
+{
+	std::vector<int> v1;
+	std::vector<int> v2;
+	std::vector<int> v3;
+
+	v1.push_back(1);
+	v2.push_back(2);
+	v1.push_back(2);
+	v2.push_back(1);
+
+	//std::vector<int>::iterator it = std::set_difference(v1.begin(), v1.end(), v2.begin(), v2.end(), v3.begin());
+	//std::sort(v1.begin(), v1.end());
+	//std::sort(v2.begin(), v2.end());
+	BOOST_CHECK( v1 == v2 );
+
+}

@@ -79,7 +79,7 @@ int isFailed(int ** edgesFailedToEmbedList, int edgesFailedToEmbedCount, int * e
 }
 
 
-vertices_list getEndVertices(vertices_list dualGraph, int endVertex)
+vertices_list getVertices(vertices_list dualGraph, int endVertex)
 {
 	vertices_list endVertices;
 
@@ -99,24 +99,20 @@ vertices_list getEndVertices(vertices_list dualGraph, int endVertex)
 }
 
 
-vertices_list BFS(int startVertex, vertices_list endVertices,
-		vertices_list dualGraph, vertices_list * visitedVertices)
+bool BFS(vertices_t startFace, vertices_list endFaces,
+		vertices_list dualGraph, vertices_list * visitedFaces)
 {
-	//if startVertex in endVertices ? return visitedVertices
+	//if startFace in endFaces ? return true
+	//if startFace in visitedFaces ? return false
+	//add startFace to visitedFaces
+	//find incident faces to startFace
+	//for(i in incident_faces)
+	//	if(BFS(i, endFaces, dualGraph, visitedFaces))
+	//	{
+	//		return true;
+	//	}
 
-	vertices_list start_vertices = getEndVertices(dualGraph, startVertex);
-
-	for (vertices_list::iterator it = start_vertices.begin() ; it != start_vertices.end(); ++it)
-		{
-			for(vertices_t::iterator itr = it->begin(); itr != it->end(); itr++)
-			{
-				if(*itr == endVertex)
-				{
-					endVertices.push_back(*it);
-					break;
-				}
-			}
-		}
+	return false;
 }
 
 
@@ -133,15 +129,14 @@ void findCommonEdge(vertices_t firstFace, vertices_t secondFace, int * u, int * 
 }
 
 
-void planarize_path(graphD * theGraph, int * edge, vertices_list path, int * vertexCount)
+void planarize_path(graphD * theGraph, int * edge, vertices_list * path, int * vertexCount)
 {
-	for (vertices_list::iterator it = path.begin() ; it + 1 != path.end(); ++it)
+	for (vertices_list::iterator it = path->begin() ; it + 1 != path->end(); ++it)
 	{
 		int u, v;
 		findCommonEdge(*it, *(it + 1), &u, &v);
 		planarize_two_edges(theGraph, u, v, edge[0], edge[1], *vertexCount);
 		(*vertexCount)++;
-
 	}
 }
 
@@ -177,12 +172,19 @@ int getCrossingNumber(int ** edgesList, int edgesCount,
     for(int i = 0; i < edgesFailedToEmbedCount; i++)
     {
     	vertices_list dualGraph = getDualGraph(theGraph);
-    	vertices_list endVertices = getEndVertices(dualGraph, edgesFailedToEmbedList[i][1]);
+    	vertices_list startVertices = getVertices(dualGraph, edgesFailedToEmbedList[i][0]);
+    	vertices_list endVertices = getVertices(dualGraph, edgesFailedToEmbedList[i][1]);
     	vertices_list * visitedVertices = new vertices_list;
-    	vertices_list path =
-    			BFS(edgesFailedToEmbedList[i][0], endVertices, dualGraph, visitedVertices);
-		cr += path.size() - 1;
-    	planarize_path(&theGraph, edgesFailedToEmbedList[i], path, &vertexCount);
+    	for (vertices_list::iterator it = startVertices.begin() ; it != startVertices.end(); ++it)
+    	{
+    		if(BFS(*it, endVertices, dualGraph, visitedVertices))
+    		{
+    			break;
+    		}
+    	}
+
+		cr += visitedVertices->size() - 1;
+    	planarize_path(&theGraph, edgesFailedToEmbedList[i], visitedVertices, &vertexCount);
     }
 
 
