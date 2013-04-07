@@ -5,7 +5,7 @@
 #include "stdlib.h"
 
 
-void planarize_two_edges(graphP * theGraph, int u1, int v1, int u2, int v2, int newVertex)
+void planarize_two_edges(graphD * theGraph, int u1, int v1, int u2, int v2, int newVertex)
 {
 	remove_edge(u1, v1, *theGraph);
 	remove_edge(u2, v2, *theGraph);
@@ -18,10 +18,9 @@ void planarize_two_edges(graphP * theGraph, int u1, int v1, int u2, int v2, int 
 
 
 /* freeing allocated memory for edges */
-void freeMem(int ** edgesList, int edgesCount)
+void freeEdgesList(int ** edgesList, int edgesCount)
 {
-    int i;
-    for(i = 0; i < edgesCount; i++)
+    for(int i = 0; i < edgesCount; i++)
     {
         free(edgesList[i]);
     }

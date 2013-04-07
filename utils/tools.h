@@ -5,8 +5,8 @@
 
 #include "graph.h"
 
-void planarize_two_edges(graphP * theGraph, int u1, int v1, int u2, int v2, int newVertex);
-void freeMem(int ** edgesList, int edgesCount);
+void planarize_two_edges(graphD * theGraph, int u1, int v1, int u2, int v2, int newVertex);
+void freeEdgesList(int ** edgesList, int edgesCount);
 
 
 #endif

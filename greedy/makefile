@@ -3,12 +3,12 @@ CC=g++
 O=-O2
 BIN=greedy
 ULIB=../utils/
-DEBUG=
+DEBUG=-g
 W=-Wall
-PIPE=-std=gnu++11
+PIPE=
 
-all: main.cpp fileReader.o randomize.o tools.o $(ULIB)*.h
-	$(CC) $(O) $(DEBUG) $(W) $(PIPE) main.cpp fileReader.o randomize.o tools.o -o $(BIN) -I$(ULIB)
+all: main.cpp fileReader.o randomize.o tools.o greedy.cpp noname.cpp $(ULIB)*.h
+	$(CC) $(O) $(DEBUG) $(W) $(PIPE) main.cpp fileReader.o randomize.o tools.o greedy.cpp noname.cpp -o $(BIN) -I$(ULIB)
 
 
 fileReader.o: $(ULIB)fileReader.c
