@@ -37,9 +37,10 @@ int main(int argc, char *argv[])
     //std::cout << "Minimum count of edges which failed to embed - " <<
     //        edgesFailedToEmbedCount << std::endl;
    
-    getCrossingNumber(edgesList, edgesCount,
+    int cr = getCrossingNumber(edgesList, edgesCount,
     		edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
 
+    std::cout << "crossing number - " << cr << std::endl;
     freeEdgesList(edgesList, edgesCount);
     freeEdgesList(edgesFailedToEmbedList, edgesCount);
     return 0;

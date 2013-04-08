@@ -1,5 +1,4 @@
 
-#include "noname.h"
 #include "cstdlib"
 #include "graph.h"
 #include <boost/graph/adjacency_list.hpp>
@@ -15,6 +14,7 @@
 #include <algorithm>
 
 using namespace boost;
+
 
 
 typedef std::vector<int> vertices_t;
@@ -33,6 +33,7 @@ struct output_visitor : public planar_face_traversal_visitor
 
 	void end_face()
 	{
+		std::sort(face.begin(), face.end());
 		dualGraph.push_back(face);
 	}
 
@@ -42,7 +43,6 @@ struct output_visitor : public planar_face_traversal_visitor
 		face.push_back(v);
 	}
 };
-
 
 
 vertices_list getDualGraph(graphD g)
@@ -79,7 +79,7 @@ int isFailed(int ** edgesFailedToEmbedList, int edgesFailedToEmbedCount, int * e
 }
 
 
-vertices_list getVertices(vertices_list dualGraph, int endVertex)
+vertices_list getFaces(vertices_list dualGraph, int endVertex)
 {
 	vertices_list endVertices;
 
@@ -99,18 +99,67 @@ vertices_list getVertices(vertices_list dualGraph, int endVertex)
 }
 
 
+vertices_list getIncidentFaces(vertices_t face, vertices_list dualGraph)
+{
+	vertices_list incidentFaces;
+	vertices_t tmpFace;
+
+	for(vertices_list::iterator it = dualGraph.begin(); it != dualGraph.end(); it++)
+	{
+		std::set_intersection(it->begin(), it->end(),
+			face.begin(), face.end(), std::back_inserter(tmpFace));
+
+		if(tmpFace.size() == 2)
+		{
+			incidentFaces.push_back(*it);
+		}
+
+		tmpFace.clear();
+	}
+
+	return incidentFaces;
+}
+
+
 bool BFS(vertices_t startFace, vertices_list endFaces,
 		vertices_list dualGraph, vertices_list * visitedFaces)
 {
-	//if startFace in endFaces ? return true
-	//if startFace in visitedFaces ? return false
-	//add startFace to visitedFaces
-	//find incident faces to startFace
-	//for(i in incident_faces)
-	//	if(BFS(i, endFaces, dualGraph, visitedFaces))
-	//	{
-	//		return true;
-	//	}
+	/*
+	for(vertices_list::iterator it = endFaces.begin(); it != endFaces.end(); it++)
+	{
+		if(*it == startFace)
+		{
+			return true;
+		}
+	}
+	*/
+
+	for(vertices_list::iterator it = visitedFaces->begin(); it != visitedFaces->end(); it++)
+	{
+		if(*it == startFace)
+		{
+			return false;
+		}
+	}
+
+	visitedFaces->push_back(startFace);
+	vertices_list incidentFaces = getIncidentFaces(startFace, dualGraph);
+
+	for(vertices_list::iterator it = endFaces.begin(); it != endFaces.end(); it++)
+	{
+		if(*it == startFace)
+		{
+			return true;
+		}
+	}
+
+	for(vertices_list::iterator it = incidentFaces.begin(); it != incidentFaces.end(); it++)
+	{
+		if(BFS(*it, endFaces, dualGraph, visitedFaces))
+		{
+			return true;
+		}
+	}
 
 	return false;
 }
@@ -118,26 +167,48 @@ bool BFS(vertices_t startFace, vertices_list endFaces,
 
 void findCommonEdge(vertices_t firstFace, vertices_t secondFace, int * u, int * v)
 {
-	vertices_t vec2;
-	std::sort(firstFace.begin(), firstFace.end(), std::greater<int>());
-	std::sort(secondFace.begin(), secondFace.end(), std::greater<int>());
-	std::set_intersection(  firstFace.begin(), firstFace.end(),
-			secondFace.begin(), secondFace.end(), vec2.begin());
+	vertices_t commonEdge;
+	std::set_intersection(firstFace.begin(), firstFace.end(),
+			secondFace.begin(), secondFace.end(), std::back_inserter(commonEdge));
 
-	*u = vec2[0];
-	*v = vec2[1];
+	*u = commonEdge[0];
+	*v = commonEdge[1];
 }
+
 
 
 void planarize_path(graphD * theGraph, int * edge, vertices_list * path, int * vertexCount)
 {
-	for (vertices_list::iterator it = path->begin() ; it + 1 != path->end(); ++it)
+	assert(path->size() > 1);
+	int u, v;
+
+	if(path->size() == 2)
 	{
-		int u, v;
-		findCommonEdge(*it, *(it + 1), &u, &v);
+		findCommonEdge(path->at(0), path->at(1), &u, &v);
 		planarize_two_edges(theGraph, u, v, edge[0], edge[1], *vertexCount);
 		(*vertexCount)++;
 	}
+	else
+	{
+		std::cout << "aaa\n";
+		//FIXME need to review and test this
+		for (vertices_list::iterator it = path->begin() ; it + 2 != path->end(); ++it)
+		{
+			findCommonEdge(*it, *(it + 1), &u, &v);
+			planarize_one_edge(theGraph, u, v, edge[0], *vertexCount);
+			edge[0] = *vertexCount;
+			(*vertexCount)++;
+		}
+
+		vertices_t ultimate = path->back();
+		path->pop_back();
+		vertices_t penultimate = path->back();
+
+		findCommonEdge(penultimate, ultimate, &u, &v);
+		planarize_two_edges(theGraph, u, v, *vertexCount - 1, edge[1], *vertexCount);
+		(*vertexCount)++;
+	}
+
 }
 
 
@@ -155,39 +226,85 @@ int getCrossingNumber(int ** edgesList, int edgesCount,
         	add_edge(edgesList[i][0], edgesList[i][1], theGraph);
     	}
     }
-
-
-    /*
-    for (vertices_list::iterator it = dualGraph.begin() ; it != dualGraph.end(); ++it)
-    {
-    	for(vertices_t::iterator itr = it->begin(); itr != it->end(); itr++)
-    	{
-    		std::cout << *itr << " ";
-    	}
-    	std::cout << std::endl;
-    }
-	*/
-
+	
 
     for(int i = 0; i < edgesFailedToEmbedCount; i++)
     {
     	vertices_list dualGraph = getDualGraph(theGraph);
-    	vertices_list startVertices = getVertices(dualGraph, edgesFailedToEmbedList[i][0]);
-    	vertices_list endVertices = getVertices(dualGraph, edgesFailedToEmbedList[i][1]);
-    	vertices_list * visitedVertices = new vertices_list;
-    	for (vertices_list::iterator it = startVertices.begin() ; it != startVertices.end(); ++it)
+    	vertices_list startFaces = getFaces(dualGraph, edgesFailedToEmbedList[i][0]);
+    	vertices_list endFaces = getFaces(dualGraph, edgesFailedToEmbedList[i][1]);
+    	//vertices_list * visitedFaces = new vertices_list;
+
+    	std::deque<vertices_t> deq;
+
+    	for (vertices_list::iterator it = startFaces.begin() ; it != startFaces.end(); ++it)
     	{
-    		if(BFS(*it, endVertices, dualGraph, visitedVertices))
-    		{
-    			break;
-    		}
+    		deq.push_back(*it);
     	}
 
-		cr += visitedVertices->size() - 1;
-    	planarize_path(&theGraph, edgesFailedToEmbedList[i], visitedVertices, &vertexCount);
+    	std::map<vertices_t, vertices_t> map;
+    	bool ok = false;
+    	while(!deq.empty())
+    	{
+    		vertices_t element = deq.front();
+    		deq.pop_front();
+
+        	for(vertices_list::iterator it = endFaces.begin() ; it != endFaces.end(); ++it)
+        	{
+        		if(*it == element)
+        		{
+        			std::cout << "found\n";
+        			ok = true;
+        		}
+        	}
+        	if(ok) break;
+        	vertices_list incidentFaces = getIncidentFaces(element, dualGraph);
+
+        	for(vertices_list::iterator it = incidentFaces.begin() ; it != incidentFaces.end(); ++it)
+        	{
+        		bool found = false;
+        		for(std::deque<vertices_t>::iterator itr = deq.begin() ; itr != deq.end(); ++itr)
+        		{
+        			if(*itr == *it)
+        			{
+        				found = true;
+        				break;
+        			}
+        		}
+        		if(!found)
+        		{
+        			deq.push_back(*it);
+        			map[*it] = element;
+        		}
+        	}
+    	}
+
+    	for(std::map<vertices_t, vertices_t>::iterator it = map.begin(); it != map.end(); it++)
+    	{
+    		for (vertices_t::const_iterator itr = it->first.begin() ; itr != it->first.end(); ++itr)
+    		{
+    			std::cout << *itr << " ";
+    		}
+    		std::cout << "=>  ";
+    		for (vertices_t::const_iterator itr = it->second.begin() ; itr != it->second.end(); ++itr)
+    		{
+    			std::cout << *itr << " ";
+    		}
+
+    		std::cout << std::endl;
+    	}
+		//cr += visitedFaces->size() - 1;
+    	//planarize_path(&theGraph, edgesFailedToEmbedList[i], visitedFaces, &vertexCount);
     }
 
 
 	return cr;
 }
 
+
+/*
+ * if(BFS(*it, endFaces, dualGraph, visitedFaces))
+    		{
+    			break;
+    		}
+ */

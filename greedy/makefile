@@ -3,7 +3,7 @@ CC=g++
 O=-O2
 BIN=greedy
 ULIB=../utils/
-DEBUG=
+DEBUG=-g
 W=-Wall
 PIPE=
 
@@ -19,8 +19,8 @@ randomize.o: $(ULIB)randomize.c
 	$(CC) $(W) -c $(O) $(DEBUG) $(ULIB)randomize.c
 
 
-tools.o: $(ULIB)tools.c
-	$(CC) $W -c $(O) $(DEBUG) $(ULIB)tools.c
+tools.o: $(ULIB)tools.cpp
+	$(CC) $W -c $(O) $(DEBUG) $(ULIB)tools.cpp
 
 
 clean: *.o $(BIN)

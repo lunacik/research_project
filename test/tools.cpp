@@ -16,6 +16,14 @@ void planarize_two_edges(graphD * theGraph, int u1, int v1, int u2, int v2, int 
     add_edge(v2, newVertex, *theGraph);
 }
 
+void planarize_one_edge(graphD * theGraph, int u1, int v1, int u2, int newVertex)
+{
+	remove_edge(u1, v1, *theGraph);
+
+    add_edge(u1, newVertex, *theGraph);
+    add_edge(v1, newVertex, *theGraph);
+    add_edge(u2, newVertex, *theGraph);
+}
 
 /* freeing allocated memory for edges */
 void freeEdgesList(int ** edgesList, int edgesCount)
