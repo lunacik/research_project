@@ -211,6 +211,24 @@ void planarize_path(graphD * theGraph, int * edge, vertices_list * path, int * v
 
 }
 
+vertices_list backtrace(std::map<vertices_t, vertices_t> map, vertices_t endElement)
+{
+	vertices_t empty;
+	vertices_list path;
+	vertices_t e = endElement;
+	while(map[e] != empty)
+	{
+		path.push_back(e);
+		e = map[e];
+		for (vertices_t::iterator it = e.begin(); it != e.end(); ++it)
+		{
+			std::cout << *it << " ";
+		}
+		std::cout << std::endl;
+	}
+	return path;
+}
+
 
 int getCrossingNumber(int ** edgesList, int edgesCount,
 		int ** edgesFailedToEmbedList, int edgesFailedToEmbedCount, int vertexCount)
@@ -255,9 +273,17 @@ int getCrossingNumber(int ** edgesList, int edgesCount,
         		{
         			std::cout << "found\n";
         			ok = true;
+        			break;
         		}
         	}
-        	if(ok) break;
+        	if(ok)
+			{
+        		vertices_list path = backtrace(map, element);
+
+        		cr += path.size() - 1;
+            	planarize_path(&theGraph, edgesFailedToEmbedList[i], &path, &vertexCount);
+        		break;
+			}
         	vertices_list incidentFaces = getIncidentFaces(element, dualGraph);
 
         	for(vertices_list::iterator it = incidentFaces.begin() ; it != incidentFaces.end(); ++it)
@@ -278,7 +304,7 @@ int getCrossingNumber(int ** edgesList, int edgesCount,
         		}
         	}
     	}
-
+    	/*
     	for(std::map<vertices_t, vertices_t>::iterator it = map.begin(); it != map.end(); it++)
     	{
     		for (vertices_t::const_iterator itr = it->first.begin() ; itr != it->first.end(); ++itr)
@@ -293,6 +319,7 @@ int getCrossingNumber(int ** edgesList, int edgesCount,
 
     		std::cout << std::endl;
     	}
+    	*/
 		//cr += visitedFaces->size() - 1;
     	//planarize_path(&theGraph, edgesFailedToEmbedList[i], visitedFaces, &vertexCount);
     }
