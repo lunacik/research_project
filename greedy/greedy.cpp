@@ -8,8 +8,8 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
 
-
 #define MAXINT 9999999
+
 using namespace boost;
 
 
@@ -52,13 +52,12 @@ int getEFTEC(int ** edgesList, int edgesCount, int ** edgesFailedToEmbedList,
 {
 	int edgesFailedToEmbed, minEdgesFailedToEmbed = MAXINT;
     int * failedToEmbedIndexes = (int*)malloc(edgesCount * sizeof(int));
-    graphP theGraph(0);
 
     srand(time(NULL));
 
     for(int i = 0; i < edgesCount; i++) //figure out how many iterations you need
     {
-        theGraph = graphP(0);
+    	graphP theGraph = graphP(0);
         shuffleEdges(edgesList, edgesCount);
         edgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount, failedToEmbedIndexes);
         if(edgesFailedToEmbed < minEdgesFailedToEmbed)
@@ -79,6 +78,7 @@ int getEFTEC(int ** edgesList, int edgesCount, int ** edgesFailedToEmbedList,
             		if(failedToEmbedIndexes[k] == j)
             		{
             			found = true;
+            			break;
             		}
             	}
         		if(!found)

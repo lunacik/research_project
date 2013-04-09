@@ -213,8 +213,9 @@ void planarize_path(graphD * theGraph, int * edge, vertices_list * path, int * v
 }
 
 
-void print_vertices_list(vertices_list list)
+void print_vertices_list(vertices_list list, std::string msg)
 {
+	std::cout << "starting printing " << msg << std::endl;
 	for (vertices_list::iterator it = list.begin() ; it != list.end(); ++it)
 	{
 		for(vertices_t::iterator itr = it->begin(); itr != it->end(); itr++)
@@ -223,7 +224,7 @@ void print_vertices_list(vertices_list list)
 		}
 		std::cout << std::endl;
 	}
-
+	std::cout << "ending printing " << msg << std::endl;
 }
 
 
@@ -295,13 +296,14 @@ BOOST_AUTO_TEST_CASE( my_test )
 	//print_vertices(startFaces[0]);
 	path->push_back(startFaces[1]);
 	path->push_back(startFaces[2]);
-	std::cout << BFS(startFaces[0], endFaces, dualGraph, path) << std::endl;
+	//std::cout << BFS(startFaces[0], endFaces, dualGraph, path) << std::endl;
 	//vertices_list incidentFaces = getIncidentFaces(startFaces[0], dualGraph);
 	//incidentFaces = getIncidentFaces(incidentFaces[0], dualGraph);
-	print_vertices_list(*path);
-	std::cout << "\n";
-	print_vertices_list(endFaces);
+	//print_vertices_list(*path);
+	//std::cout << "\n";
+	//print_vertices_list(endFaces);
 	//std::cout << path->size() << std::endl;
+
 
 }
 

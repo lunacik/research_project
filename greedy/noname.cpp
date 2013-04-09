@@ -16,10 +16,36 @@
 using namespace boost;
 
 
-
 typedef std::vector<int> vertices_t;
 typedef std::vector<std::vector<int> > vertices_list;
 
+void print_vertices_list(vertices_list list, std::string msg)
+{
+	std::cout << "starting printing " << msg << std::endl;
+	for (vertices_list::iterator it = list.begin() ; it != list.end(); ++it)
+	{
+		for(vertices_t::iterator itr = it->begin(); itr != it->end(); itr++)
+		{
+			std::cout << *itr << "  ";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << "ending printing " << msg << std::endl;
+}
+
+void print_vertices_list(std::deque<vertices_t> list, std::string msg)
+{
+	std::cout << "starting printing " << msg << std::endl;
+	for (std::deque<vertices_t>::iterator it = list.begin() ; it != list.end(); ++it)
+	{
+		for(vertices_t::iterator itr = it->begin(); itr != it->end(); itr++)
+		{
+			std::cout << *itr << "  ";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << "ending printing " << msg << std::endl;
+}
 
 struct output_visitor : public planar_face_traversal_visitor
 {
@@ -34,6 +60,9 @@ struct output_visitor : public planar_face_traversal_visitor
 	void end_face()
 	{
 		std::sort(face.begin(), face.end());
+		//TODO review this
+		std::vector<int>::iterator it = std::unique(face.begin(), face.end());
+		face.resize(std::distance(face.begin(), it));
 		dualGraph.push_back(face);
 	}
 
@@ -84,26 +113,32 @@ vertices_list getFaces(vertices_list dualGraph, int endVertex)
 	return endVertices;
 }
 
-
-vertices_list getIncidentFaces(vertices_t face, vertices_list dualGraph)
+//FIXME wrong logic 2 faces can poses few same vertices, but that doesn't mean they are adjacent!
+//TODO face have to save each edge??
+vertices_list getAdjacentFaces(vertices_t face, vertices_list dualGraph)
 {
-	vertices_list incidentFaces;
+	vertices_list adjacentFaces;
 	vertices_t tmpFace;
 
 	for(vertices_list::iterator it = dualGraph.begin(); it != dualGraph.end(); it++)
 	{
+		if(*it == face)
+		{
+			continue;
+		}
+
 		std::set_intersection(it->begin(), it->end(),
 			face.begin(), face.end(), std::back_inserter(tmpFace));
 
-		if(tmpFace.size() == 2)
+		if(tmpFace.size() > 1)
 		{
-			incidentFaces.push_back(*it);
+			adjacentFaces.push_back(*it);
 		}
 
 		tmpFace.clear();
 	}
 
-	return incidentFaces;
+	return adjacentFaces;
 }
 
 
@@ -195,10 +230,13 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
     		closedFaces.push_back(*it);
     	}
 
-    	bool ok = false;
+    	print_vertices_list(endFaces, "end faces");
     	//BFS
     	while(!deq.empty())
     	{
+    		print_vertices_list(deq, "stack");
+    		print_vertices_list(closedFaces, "closed faces");
+    		bool ok = false;
     		vertices_t element = deq.front();
     		deq.pop_front();
 
@@ -213,15 +251,16 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
         	if(ok)
 			{
         		vertices_list path = backtrace(map, element);
+        		std::cout << "path size - " << path.size() << std::endl;
         		cr += path.size() - 1;
             	planarize_path(&theGraph, edgesFailedToEmbedList[i], &path, &vertexCount);
         		break;
 			}
 
         	closedFaces.push_back(element);
-        	vertices_list incidentFaces = getIncidentFaces(element, dualGraph);
+        	vertices_list adjacentFaces = getAdjacentFaces(element, dualGraph);
 
-        	for(vertices_list::iterator it = incidentFaces.begin() ; it != incidentFaces.end(); ++it)
+        	for(vertices_list::iterator it = adjacentFaces.begin() ; it != adjacentFaces.end(); ++it)
         	{
         		bool found = false;
         		for(vertices_list::iterator itr = closedFaces.begin() ; itr != closedFaces.end(); ++itr)
@@ -239,10 +278,8 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
         		}
         	}
     	}
-
     }
 
 
 	return cr;
 }
-
