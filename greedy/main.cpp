@@ -36,7 +36,16 @@ int main(int argc, char *argv[])
 
     //std::cout << "Minimum count of edges which failed to embed - " <<
     //        edgesFailedToEmbedCount << std::endl;
-   
+   /*
+    edgesFailedToEmbedList[0][0] = 0;
+    edgesFailedToEmbedList[0][1] = 1;
+    edgesFailedToEmbedList[1][0] = 0;
+	edgesFailedToEmbedList[1][1] = 4;
+	edgesFailedToEmbedList[2][0] = 4;
+	edgesFailedToEmbedList[2][1] = 5;
+
+	edgesFailedToEmbedCount = 3;
+	*/
     int cr = getCrossingNumber(edgesList, edgesCount,
     		edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
 
