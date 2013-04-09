@@ -65,20 +65,6 @@ vertices_list getDualGraph(graphD g)
 }
 
 
-int isFailed(int ** edgesFailedToEmbedList, int edgesFailedToEmbedCount, int * edge)
-{
-	for(int i = 0; i < edgesFailedToEmbedCount; i++)
-	{
-		if(edgesFailedToEmbedList[i][0] == edge[0] &&
-				edgesFailedToEmbedList[i][1] == edge[1])
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-
 vertices_list getFaces(vertices_list dualGraph, int endVertex)
 {
 	vertices_list endVertices;
@@ -180,19 +166,16 @@ vertices_list backtrace(std::map<vertices_t, vertices_t> map, vertices_t e)
 }
 
 
-int getCrossingNumber(int ** edgesList, int edgesCount,
+int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, int edgesCount,
 		int ** edgesFailedToEmbedList, int edgesFailedToEmbedCount, int vertexCount)
 {
 	int cr = 0;
 
 	graphD theGraph(vertexCount);
 
-    for(int i = 0; i < edgesCount; i++)
+    for(int i = 0; i < edgesCount - edgesFailedToEmbedCount; i++)
     {
-    	if(!isFailed(edgesFailedToEmbedList, edgesFailedToEmbedCount, edgesList[i]))
-    	{
-        	add_edge(edgesList[i][0], edgesList[i][1], theGraph);
-    	}
+        add_edge(edgesSucceedToEmbed->at(i).first, edgesSucceedToEmbed->at(i).second, theGraph);
     }
 	
 
@@ -262,6 +245,4 @@ int getCrossingNumber(int ** edgesList, int edgesCount,
 
 	return cr;
 }
-
-
 

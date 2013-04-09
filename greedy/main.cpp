@@ -1,5 +1,5 @@
 
-#include "fileReader.h" //for loading graph from file
+#include "fileReader.h"
 #include "tools.h"
 #include <iostream>
 #include "greedy.h"
@@ -32,24 +32,24 @@ int main(int argc, char *argv[])
     	edgesFailedToEmbedList[i] = (int*)malloc(2 * sizeof(int));
     }
     
-    edgesFailedToEmbedCount = getEFTEC(edgesList, edgesCount, edgesFailedToEmbedList);
+    std::vector<std::pair<int, int> > * edgesSucceedToEmbed = new std::vector<std::pair<int, int> >;
 
-    //std::cout << "Minimum count of edges which failed to embed - " <<
-    //        edgesFailedToEmbedCount << std::endl;
-   /*
-    edgesFailedToEmbedList[0][0] = 0;
-    edgesFailedToEmbedList[0][1] = 1;
-    edgesFailedToEmbedList[1][0] = 0;
-	edgesFailedToEmbedList[1][1] = 4;
-	edgesFailedToEmbedList[2][0] = 4;
-	edgesFailedToEmbedList[2][1] = 5;
+    clock_t begin, end;
+    double time_spent;
+    begin = clock();
 
-	edgesFailedToEmbedCount = 3;
-	*/
-    int cr = getCrossingNumber(edgesList, edgesCount,
+    edgesFailedToEmbedCount = getEFTEC(edgesList, edgesCount, edgesFailedToEmbedList, edgesSucceedToEmbed);
+
+    int cr = getCrossingNumber(edgesSucceedToEmbed, edgesCount,
     		edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
 
+    end = clock();
+    time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+
+    std::cout << "time spent - " << time_spent << std::endl;
+    std::cout << "edges failed to embed count - " << edgesFailedToEmbedCount << std::endl;
     std::cout << "crossing number - " << cr << std::endl;
+
     freeEdgesList(edgesList, edgesCount);
     freeEdgesList(edgesFailedToEmbedList, edgesCount);
     return 0;

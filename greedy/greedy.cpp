@@ -30,12 +30,12 @@ int tryToAddEdge(graphP * theGraph, int u, int v)
 
 /* trying to add as much edges as it can while preserving planarity.
  * Returns the number of edges which were unable to add */
-int tryToEmbed(graphP * theGraph, int ** edgesList, int edgesCount, int * failedEdgesList)
+int tryToEmbed(graphP * theGraph, int ** edgesList,
+		int edgesCount, int * failedEdgesList)
 {
-    int i;
     int edgesFailedToEmbed = 0;
 
-    for(i = 0; i < edgesCount; i++)
+    for(int i = 0; i < edgesCount; i++)
     {
         if(!tryToAddEdge(theGraph, edgesList[i][0], edgesList[i][1]))
         {
@@ -47,7 +47,8 @@ int tryToEmbed(graphP * theGraph, int ** edgesList, int edgesCount, int * failed
 
 
 /*Selecting the smallest edges failed to embed count*/
-int getEFTEC(int ** edgesList, int edgesCount, int ** edgesFailedToEmbedList)
+int getEFTEC(int ** edgesList, int edgesCount, int ** edgesFailedToEmbedList,
+		std::vector<std::pair<int, int> > * edgesSucceedToEmbed)
 {
 	int edgesFailedToEmbed, minEdgesFailedToEmbed = MAXINT;
     int * failedToEmbedIndexes = (int*)malloc(edgesCount * sizeof(int));
@@ -67,6 +68,25 @@ int getEFTEC(int ** edgesList, int edgesCount, int ** edgesFailedToEmbedList)
                 edgesFailedToEmbedList[j][0] = edgesList[failedToEmbedIndexes[j]][0];
                 edgesFailedToEmbedList[j][1] = edgesList[failedToEmbedIndexes[j]][1];
             }
+
+        	edgesSucceedToEmbed->clear();
+
+            for(int j = 0; j < edgesCount; j++)
+            {
+            	bool found = false;
+            	for(int k = 0; k < edgesFailedToEmbed; k++)
+            	{
+            		if(failedToEmbedIndexes[k] == j)
+            		{
+            			found = true;
+            		}
+            	}
+        		if(!found)
+        		{
+            		edgesSucceedToEmbed->push_back(std::pair<int, int>(edgesList[j][0], edgesList[j][1]));
+        		}
+            }
+
             minEdgesFailedToEmbed = edgesFailedToEmbed;
         }
     }

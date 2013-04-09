@@ -3,11 +3,8 @@
 #define NONAME_H
 
 
-int getCrossingNumber(int ** edgesList, int edgesCount,
+int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, int edgesCount,
 		int ** edgesFailedToEmbedList, int edgesFailedToEmbedCount, int vertexCount);
-
-
-//TODO apsibrezti dualu grafa, use vector of vector?
 
 
 #endif

@@ -6,7 +6,8 @@
 
 int tryToAddEdge(graphP * theGraph, int u, int v);
 int tryToEmbed(graphP * theGraph, int ** edgesList, int edgesCount, int * failedEdgesList);
-int getEFTEC(int ** edgesList, int edgesCount, int ** edgesFailedToEmbedList);
+int getEFTEC(int ** edgesList, int edgesCount,
+		int ** edgesFailedToEmbedList, std::vector<std::pair<int, int> > * edgesSucceedToEmbed);
 
 
 #endif
