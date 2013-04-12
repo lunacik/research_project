@@ -16,65 +16,90 @@
 using namespace boost;
 
 
+struct Edge
+{
+public:
+	int u, v;
+
+	Edge(int u, int v)
+	{
+		this->u = u;
+		this->v = v;
+	}
+
+	bool operator== (const Edge& e)
+	{
+		return (e.u == u && e.v == v) || (e.v == u && e.u == v);
+	}
+};
+
+
+typedef std::vector<Edge> edges_t;
 typedef std::vector<int> vertices_t;
 typedef std::vector<std::vector<int> > vertices_list;
 
-void print_vertices_list(vertices_list list, std::string msg)
-{
-	std::cout << "starting printing " << msg << std::endl;
-	for (vertices_list::iterator it = list.begin() ; it != list.end(); ++it)
-	{
-		for(vertices_t::iterator itr = it->begin(); itr != it->end(); itr++)
-		{
-			std::cout << *itr << "  ";
-		}
-		std::cout << std::endl;
-	}
-	std::cout << "ending printing " << msg << std::endl;
-}
 
-void print_vertices_list(std::deque<vertices_t> list, std::string msg)
+struct Face
 {
-	std::cout << "starting printing " << msg << std::endl;
-	for (std::deque<vertices_t>::iterator it = list.begin() ; it != list.end(); ++it)
+	edges_t edges;
+	vertices_t vertices;
+	int id;
+
+	Face(edges_t edges, vertices_t vertices, int id)
 	{
-		for(vertices_t::iterator itr = it->begin(); itr != it->end(); itr++)
-		{
-			std::cout << *itr << "  ";
-		}
-		std::cout << std::endl;
+		this->edges = edges;
+		this->vertices = vertices;
+		this->id = id;
 	}
-	std::cout << "ending printing " << msg << std::endl;
-}
+
+	bool operator== (const Face& f)
+	{
+		return f.id == id;
+	}
+};
+
+
+typedef std::vector<Face> faces_list;
+
 
 struct output_visitor : public planar_face_traversal_visitor
 {
-	vertices_list dualGraph;
-	vertices_t face;
+	faces_list dualGraph;
+	edges_t edges;
+	vertices_t vertices;
+	int maxId;
+
+	output_visitor(int maxId)
+	{
+		this->maxId = maxId;
+	}
 
 	void begin_face()
 	{
-		face = vertices_t();
+		edges = edges_t();
+		vertices = vertices_t();
 	}
 
 	void end_face()
 	{
-		std::sort(face.begin(), face.end());
-		//TODO review this
-		std::vector<int>::iterator it = std::unique(face.begin(), face.end());
-		face.resize(std::distance(face.begin(), it));
-		dualGraph.push_back(face);
+		dualGraph.push_back(Face(edges, vertices, maxId++));
 	}
 
 	template <typename Vertex>
 	void next_vertex(Vertex v)
 	{
-		face.push_back(v);
+		vertices.push_back(v);
+	}
+
+	template <typename E>
+	void next_edge(E e)
+	{
+		edges.push_back(Edge(e.m_source, e.m_target));
 	}
 };
 
 
-vertices_list getDualGraph(graphD g)
+faces_list getDualGraph(graphD g, int vertexCount)
 {
 	  property_map<graphD, edge_index_t>::type e_index = get(edge_index, g);
 	  graph_traits<graphD>::edges_size_type edge_count = 0;
@@ -83,24 +108,24 @@ vertices_list getDualGraph(graphD g)
 	    put(e_index, *ei, edge_count++);
 
 	  typedef std::vector< graph_traits<graphD>::edge_descriptor > vec_t;
-	  std::vector<vec_t> embedding(num_vertices(g));
+	  std::vector<vec_t> embedding(vertexCount);
 	  boyer_myrvold_planarity_test(boyer_myrvold_params::graph = g,
 			  boyer_myrvold_params::embedding = &embedding[0]);
 
-	  output_visitor v_vis;
+	  output_visitor v_vis(0);
 	  planar_face_traversal(g, &embedding[0], v_vis);
 
 	  return v_vis.dualGraph;
 }
 
 
-vertices_list getFaces(vertices_list dualGraph, int endVertex)
+faces_list getFaces(faces_list dualGraph, int endVertex)
 {
-	vertices_list endVertices;
+	faces_list endVertices;
 
-	for (vertices_list::iterator it = dualGraph.begin() ; it != dualGraph.end(); ++it)
+	for (faces_list::iterator it = dualGraph.begin() ; it != dualGraph.end(); ++it)
 	{
-		for(vertices_t::iterator itr = it->begin(); itr != it->end(); itr++)
+		for(vertices_t::iterator itr = it->vertices.begin(); itr != it->vertices.end(); itr++)
 		{
 			if(*itr == endVertex)
 			{
@@ -113,47 +138,53 @@ vertices_list getFaces(vertices_list dualGraph, int endVertex)
 	return endVertices;
 }
 
-//FIXME wrong logic 2 faces can poses few same vertices, but that doesn't mean they are adjacent!
-//TODO face have to save each edge??
-vertices_list getAdjacentFaces(vertices_t face, vertices_list dualGraph)
-{
-	vertices_list adjacentFaces;
-	vertices_t tmpFace;
 
-	for(vertices_list::iterator it = dualGraph.begin(); it != dualGraph.end(); it++)
+faces_list getAdjacentFaces(Face face, faces_list dualGraph)
+{
+	faces_list adjacentFaces;
+
+	for(faces_list::iterator it = dualGraph.begin(); it != dualGraph.end(); it++)
 	{
-		if(*it == face)
+		if(face == *it)
 		{
 			continue;
 		}
 
-		std::set_intersection(it->begin(), it->end(),
-			face.begin(), face.end(), std::back_inserter(tmpFace));
-
-		if(tmpFace.size() > 1)
+		for(edges_t::iterator itr = it->edges.begin(); itr != it->edges.end(); itr++)
 		{
-			adjacentFaces.push_back(*it);
+			for(edges_t::iterator iter = face.edges.begin(); iter != face.edges.end(); iter++)
+			{
+				if(*iter == *itr)
+				{
+					adjacentFaces.push_back(*it);
+				}
+				continue;
+			}
 		}
-
-		tmpFace.clear();
 	}
 
 	return adjacentFaces;
 }
 
 
-void findCommonEdge(vertices_t firstFace, vertices_t secondFace, int * u, int * v)
+void findCommonEdge(Face firstFace, Face secondFace, int * u, int * v)
 {
-	vertices_t commonEdge;
-	std::set_intersection(firstFace.begin(), firstFace.end(),
-			secondFace.begin(), secondFace.end(), std::back_inserter(commonEdge));
-
-	*u = commonEdge[0];
-	*v = commonEdge[1];
+	for(edges_t::iterator it = firstFace.edges.begin(); it != firstFace.edges.end(); it++)
+	{
+		for(edges_t::iterator itr = secondFace.edges.begin(); itr != secondFace.edges.end(); itr++)
+		{
+			if(*it == *itr)
+			{
+				*u = it->u;
+				*v = it->v;
+				return;
+			}
+		}
+	}
 }
 
 
-void planarize_path(graphD * theGraph, int * edge, vertices_list * path, int * vertexCount)
+void planarize_path(graphD * theGraph, int * edge, faces_list * path, int * vertexCount)
 {
 	assert(path->size() > 1);
 	int u, v;
@@ -166,7 +197,7 @@ void planarize_path(graphD * theGraph, int * edge, vertices_list * path, int * v
 	}
 	else
 	{
-		for (vertices_list::reverse_iterator it = path->rbegin() ; it + 2 != path->rend(); ++it)
+		for (faces_list::reverse_iterator it = path->rbegin() ; it + 2 != path->rend(); ++it)
 		{
 			findCommonEdge(*it, *(it + 1), &u, &v);
 			planarize_one_edge(theGraph, u, v, edge[0], *vertexCount);
@@ -174,29 +205,26 @@ void planarize_path(graphD * theGraph, int * edge, vertices_list * path, int * v
 			(*vertexCount)++;
 		}
 
-		vertices_t ultimate = path->at(0);
-		vertices_t penultimate = path->at(1);
+		Face ultimate = path->at(0);
+		Face penultimate = path->at(1);
 
 		findCommonEdge(penultimate, ultimate, &u, &v);
 		planarize_two_edges(theGraph, u, v, *vertexCount - 1, edge[1], *vertexCount);
 		(*vertexCount)++;
 	}
-
 }
 
 
-vertices_list backtrace(std::map<vertices_t, vertices_t> map, vertices_t e)
+faces_list backtrace(std::map<int, int> map, int lastFaceId, faces_list dualGraph)
 {
-	vertices_t empty;
-	vertices_list path;
-	path.push_back(e);
+	faces_list path;
+	path.push_back(dualGraph[lastFaceId]);
 
-	while(map[e] != empty)
+	while(map[lastFaceId] != -1)
 	{
-		e = map[e];
-		path.push_back(e);
+		lastFaceId = map[lastFaceId];
+		path.push_back(dualGraph[lastFaceId]);
 	}
-
 	return path;
 }
 
@@ -213,34 +241,31 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
         add_edge(edgesSucceedToEmbed->at(i).first, edgesSucceedToEmbed->at(i).second, theGraph);
     }
 	
-
     for(int i = 0; i < edgesFailedToEmbedCount; i++)
     {
-    	vertices_list dualGraph = getDualGraph(theGraph);
-    	vertices_list startFaces = getFaces(dualGraph, edgesFailedToEmbedList[i][0]);
-    	vertices_list endFaces = getFaces(dualGraph, edgesFailedToEmbedList[i][1]);
+    	faces_list dualGraph = getDualGraph(theGraph, vertexCount);
+    	faces_list startFaces = getFaces(dualGraph, edgesFailedToEmbedList[i][0]);
+    	faces_list endFaces = getFaces(dualGraph, edgesFailedToEmbedList[i][1]);
 
-    	std::deque<vertices_t> deq;
-    	vertices_list closedFaces;
-    	std::map<vertices_t, vertices_t> map;
+    	std::deque<Face> deq;
+    	faces_list closedFaces;
+    	std::map<int, int> map;
 
-    	for (vertices_list::iterator it = startFaces.begin() ; it != startFaces.end(); ++it)
+    	for (faces_list::iterator it = startFaces.begin() ; it != startFaces.end(); ++it)
     	{
     		deq.push_back(*it);
     		closedFaces.push_back(*it);
+    		map[it->id] = -1;
     	}
 
-    	print_vertices_list(endFaces, "end faces");
     	//BFS
     	while(!deq.empty())
     	{
-    		print_vertices_list(deq, "stack");
-    		print_vertices_list(closedFaces, "closed faces");
     		bool ok = false;
-    		vertices_t element = deq.front();
+    		Face element = deq.front();
     		deq.pop_front();
 
-        	for(vertices_list::iterator it = endFaces.begin() ; it != endFaces.end(); ++it)
+        	for(faces_list::iterator it = endFaces.begin() ; it != endFaces.end(); ++it)
         	{
         		if(*it == element)
         		{
@@ -248,22 +273,22 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
         			break;
         		}
         	}
+
         	if(ok)
 			{
-        		vertices_list path = backtrace(map, element);
-        		std::cout << "path size - " << path.size() << std::endl;
+        		faces_list path = backtrace(map, element.id, dualGraph);
         		cr += path.size() - 1;
             	planarize_path(&theGraph, edgesFailedToEmbedList[i], &path, &vertexCount);
         		break;
 			}
 
         	closedFaces.push_back(element);
-        	vertices_list adjacentFaces = getAdjacentFaces(element, dualGraph);
+        	faces_list adjacentFaces = getAdjacentFaces(element, dualGraph);
 
-        	for(vertices_list::iterator it = adjacentFaces.begin() ; it != adjacentFaces.end(); ++it)
+        	for(faces_list::iterator it = adjacentFaces.begin() ; it != adjacentFaces.end(); ++it)
         	{
         		bool found = false;
-        		for(vertices_list::iterator itr = closedFaces.begin() ; itr != closedFaces.end(); ++itr)
+        		for(faces_list::iterator itr = closedFaces.begin() ; itr != closedFaces.end(); ++itr)
         		{
         			if(*itr == *it)
         			{
@@ -274,9 +299,10 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
         		if(!found)
         		{
         			deq.push_back(*it);
-        			map[*it] = element;
+        			map[it->id] = element.id;
         		}
         	}
+
     	}
     }
 
