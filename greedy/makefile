@@ -3,7 +3,7 @@ CC=g++
 O=-O2
 BIN=greedy
 ULIB=../utils/
-DEBUG=-g
+DEBUG=
 W=-Wall
 PIPE=
 
