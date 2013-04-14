@@ -36,22 +36,26 @@ int main(int argc, char *argv[])
 
     clock_t begin, end;
     double time_spent;
+    
     begin = clock();
 
-    edgesFailedToEmbedCount = getEFTEC(edgesList, edgesCount, edgesFailedToEmbedList, edgesSucceedToEmbed);
+    edgesFailedToEmbedCount = getEFTEC(edgesList, edgesCount, edgesFailedToEmbedList, edgesSucceedToEmbed, 10);
 
     int cr = getCrossingNumber(edgesSucceedToEmbed, edgesCount,
     		edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
 
     end = clock();
+    
     time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
     std::cout << "time spent - " << time_spent << std::endl;
     std::cout << "edges failed to embed count - " << edgesFailedToEmbedCount << std::endl;
     std::cout << "crossing number - " << cr << std::endl;
-
+    
+	delete edgesSucceedToEmbed;
     freeEdgesList(edgesList, edgesCount);
     freeEdgesList(edgesFailedToEmbedList, edgesCount);
+    
     return 0;
 }
 

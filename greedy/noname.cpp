@@ -69,9 +69,9 @@ struct output_visitor : public planar_face_traversal_visitor
 	vertices_t vertices;
 	int maxId;
 
-	output_visitor(int maxId)
+	output_visitor()
 	{
-		this->maxId = maxId;
+		this->maxId = 0;
 	}
 
 	void begin_face()
@@ -112,30 +112,30 @@ faces_list getDualGraph(graphD g, int vertexCount)
 	  boyer_myrvold_planarity_test(boyer_myrvold_params::graph = g,
 			  boyer_myrvold_params::embedding = &embedding[0]);
 
-	  output_visitor v_vis(0);
+	  output_visitor v_vis;
 	  planar_face_traversal(g, &embedding[0], v_vis);
 
 	  return v_vis.dualGraph;
 }
 
 
-faces_list getFaces(faces_list dualGraph, int endVertex)
+faces_list getFaces(faces_list dualGraph, int vertex)
 {
-	faces_list endVertices;
+	faces_list faces;
 
 	for (faces_list::iterator it = dualGraph.begin() ; it != dualGraph.end(); ++it)
 	{
 		for(vertices_t::iterator itr = it->vertices.begin(); itr != it->vertices.end(); itr++)
 		{
-			if(*itr == endVertex)
+			if(*itr == vertex)
 			{
-				endVertices.push_back(*it);
+				faces.push_back(*it);
 				break;
 			}
 		}
 	}
 
-	return endVertices;
+	return faces;
 }
 
 
@@ -186,29 +186,24 @@ void findCommonEdge(Face firstFace, Face secondFace, int * u, int * v)
 
 void planarize_path(graphD * theGraph, int * edge, faces_list * path, int * vertexCount)
 {
-	assert(path->size() > 1);
 	int u, v;
 
 	if(path->size() == 2)
 	{
 		findCommonEdge(path->at(1), path->at(0), &u, &v);
-		planarize_two_edges(theGraph, u, v, edge[0], edge[1], *vertexCount);
+		planarize_two_edges(theGraph, u, v, edge[0], edge[1], (*vertexCount)++);
 		(*vertexCount)++;
 	}
 	else
 	{
-		for (faces_list::reverse_iterator it = path->rbegin() ; it + 2 != path->rend(); ++it)
+		for(faces_list::reverse_iterator it = path->rbegin() ; it + 2 != path->rend(); ++it)
 		{
 			findCommonEdge(*it, *(it + 1), &u, &v);
 			planarize_one_edge(theGraph, u, v, edge[0], *vertexCount);
-			edge[0] = *vertexCount;
-			(*vertexCount)++;
+			edge[0] = (*vertexCount)++;
 		}
 
-		Face ultimate = path->at(0);
-		Face penultimate = path->at(1);
-
-		findCommonEdge(penultimate, ultimate, &u, &v);
+		findCommonEdge(path->at(1), path->at(0), &u, &v);
 		planarize_two_edges(theGraph, u, v, *vertexCount - 1, edge[1], *vertexCount);
 		(*vertexCount)++;
 	}

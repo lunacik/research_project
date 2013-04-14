@@ -15,7 +15,7 @@ using namespace boost;
 
 /* if edge doesn't affect on graph planarity, then it will be added
  * otherwise it won't. Returns wheter failed or not to add an edge */
-int tryToAddEdge(graphP * theGraph, int u, int v)
+int tryToAddEdge(graphD * theGraph, int u, int v)
 {
     add_edge(u, v, *theGraph);
     int result = boyer_myrvold_planarity_test(*theGraph);
@@ -30,7 +30,7 @@ int tryToAddEdge(graphP * theGraph, int u, int v)
 
 /* trying to add as much edges as it can while preserving planarity.
  * Returns the number of edges which were unable to add */
-int tryToEmbed(graphP * theGraph, int ** edgesList,
+int tryToEmbed(graphD * theGraph, int ** edgesList,
 		int edgesCount, int * failedEdgesList)
 {
     int edgesFailedToEmbed = 0;
@@ -48,16 +48,16 @@ int tryToEmbed(graphP * theGraph, int ** edgesList,
 
 /*Selecting the smallest edges failed to embed count*/
 int getEFTEC(int ** edgesList, int edgesCount, int ** edgesFailedToEmbedList,
-		std::vector<std::pair<int, int> > * edgesSucceedToEmbed)
+		std::vector<std::pair<int, int> > * edgesSucceedToEmbed, int iterations)
 {
 	int edgesFailedToEmbed, minEdgesFailedToEmbed = MAXINT;
     int * failedToEmbedIndexes = (int*)malloc(edgesCount * sizeof(int));
 
     srand(time(NULL));
 
-    for(int i = 0; i < edgesCount; i++) //figure out how many iterations you need
+    for(int i = 0; i < iterations; i++) //figure out how many iterations you need
     {
-    	graphP theGraph = graphP(0);
+    	graphD theGraph = graphD(0);
         shuffleEdges(edgesList, edgesCount);
         edgesFailedToEmbed = tryToEmbed(&theGraph, edgesList, edgesCount, failedToEmbedIndexes);
         if(edgesFailedToEmbed < minEdgesFailedToEmbed)

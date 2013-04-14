@@ -8,7 +8,6 @@
 
 using namespace boost;
 
-typedef adjacency_list<vecS, vecS, undirectedS, property<vertex_index_t, int> > graphP;
 
 typedef adjacency_list
   < vecS,
