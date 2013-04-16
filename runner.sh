@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 outputFolder=crossings
 sleepDelay=1

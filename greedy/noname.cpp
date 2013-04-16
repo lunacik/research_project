@@ -1,5 +1,4 @@
 
-#include "cstdlib"
 #include "graph.h"
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/properties.hpp>
@@ -7,11 +6,9 @@
 #include <boost/property_map/property_map.hpp>
 #include <boost/ref.hpp>
 #include <vector>
-#include <iostream>
 #include <boost/graph/planar_face_traversal.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
 #include "tools.h"
-#include <algorithm>
 
 using namespace boost;
 
@@ -44,12 +41,14 @@ struct Face
 	edges_t edges;
 	vertices_t vertices;
 	int id;
+	bool isClosed;
 
 	Face(edges_t edges, vertices_t vertices, int id)
 	{
 		this->edges = edges;
 		this->vertices = vertices;
 		this->id = id;
+		this->isClosed = false;
 	}
 
 	bool operator== (const Face& f)
@@ -139,13 +138,14 @@ faces_list getFaces(faces_list dualGraph, int vertex)
 }
 
 
-faces_list getAdjacentFaces(Face face, faces_list dualGraph)
+std::vector<int> getAdjacentFaces(Face face, faces_list dualGraph)
 {
 	faces_list adjacentFaces;
+	std::vector<int> facesIds;
 
 	for(faces_list::iterator it = dualGraph.begin(); it != dualGraph.end(); it++)
 	{
-		if(face == *it)
+		if(it->isClosed || face == *it)
 		{
 			continue;
 		}
@@ -156,14 +156,15 @@ faces_list getAdjacentFaces(Face face, faces_list dualGraph)
 			{
 				if(*iter == *itr)
 				{
-					adjacentFaces.push_back(*it);
+					//adjacentFaces.push_back(*it);
+					facesIds.push_back(it->id);
 				}
 				continue;
 			}
 		}
 	}
 
-	return adjacentFaces;
+	return facesIds;
 }
 
 
@@ -248,15 +249,15 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
 
     	for (faces_list::iterator it = startFaces.begin() ; it != startFaces.end(); ++it)
     	{
-    		deq.push_back(*it);
-    		closedFaces.push_back(*it);
+    		dualGraph[it->id].isClosed = true;
+    		deq.push_back(dualGraph[it->id]);
     		map[it->id] = -1;
     	}
 
+    	bool found = false;
     	//BFS
     	while(!deq.empty())
     	{
-    		bool ok = false;
     		Face element = deq.front();
     		deq.pop_front();
 
@@ -264,12 +265,12 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
         	{
         		if(*it == element)
         		{
-        			ok = true;
+        			found = true;
         			break;
         		}
         	}
 
-        	if(ok)
+        	if(found)
 			{
         		faces_list path = backtrace(map, element.id, dualGraph);
         		cr += path.size() - 1;
@@ -277,25 +278,13 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
         		break;
 			}
 
-        	closedFaces.push_back(element);
-        	faces_list adjacentFaces = getAdjacentFaces(element, dualGraph);
+        	std::vector<int> adjacentFaces = getAdjacentFaces(element, dualGraph);
 
-        	for(faces_list::iterator it = adjacentFaces.begin() ; it != adjacentFaces.end(); ++it)
+        	for(std::vector<int>::iterator it = adjacentFaces.begin() ; it != adjacentFaces.end(); ++it)
         	{
-        		bool found = false;
-        		for(faces_list::iterator itr = closedFaces.begin() ; itr != closedFaces.end(); ++itr)
-        		{
-        			if(*itr == *it)
-        			{
-        				found = true;
-        				break;
-        			}
-        		}
-        		if(!found)
-        		{
-        			deq.push_back(*it);
-        			map[it->id] = element.id;
-        		}
+				dualGraph[*it].isClosed = true;
+				deq.push_back(dualGraph[*it]);
+				map[*it] = element.id;
         	}
 
     	}
