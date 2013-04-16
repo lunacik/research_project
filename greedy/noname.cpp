@@ -140,7 +140,6 @@ faces_list getFaces(faces_list dualGraph, int vertex)
 
 std::vector<int> getAdjacentFaces(Face face, faces_list dualGraph)
 {
-	faces_list adjacentFaces;
 	std::vector<int> facesIds;
 
 	for(faces_list::iterator it = dualGraph.begin(); it != dualGraph.end(); it++)
@@ -156,7 +155,6 @@ std::vector<int> getAdjacentFaces(Face face, faces_list dualGraph)
 			{
 				if(*iter == *itr)
 				{
-					//adjacentFaces.push_back(*it);
 					facesIds.push_back(it->id);
 				}
 				continue;
