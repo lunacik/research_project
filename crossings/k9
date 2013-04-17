@@ -2,27 +2,27 @@
 1 iteration
 time spent - 0.01
 edges failed to embed count - 15
-crossing number - 37
-----------------------------
-2 iteration
-time spent - 0.02
-edges failed to embed count - 15
-crossing number - 45
-----------------------------
-3 iteration
-time spent - 0.02
-edges failed to embed count - 15
 crossing number - 40
 ----------------------------
-4 iteration
-time spent - 0.02
+2 iteration
+time spent - 0.01
 edges failed to embed count - 15
-crossing number - 42
+crossing number - 36
+----------------------------
+3 iteration
+time spent - 0.01
+edges failed to embed count - 15
+crossing number - 36
+----------------------------
+4 iteration
+time spent - 0.01
+edges failed to embed count - 15
+crossing number - 36
 ----------------------------
 5 iteration
 time spent - 0.01
 edges failed to embed count - 15
-crossing number - 40
+crossing number - 36
 ----------------------------
 6 iteration
 time spent - 0.01
@@ -30,22 +30,22 @@ edges failed to embed count - 15
 crossing number - 38
 ----------------------------
 7 iteration
-time spent - 0.02
+time spent - 0.01
 edges failed to embed count - 15
-crossing number - 40
+crossing number - 36
 ----------------------------
 8 iteration
-time spent - 0.02
+time spent - 0.01
 edges failed to embed count - 15
-crossing number - 38
+crossing number - 36
 ----------------------------
 9 iteration
-time spent - 0.02
+time spent - 0.01
 edges failed to embed count - 15
-crossing number - 38
+crossing number - 36
 ----------------------------
 10 iteration
-time spent - 0.02
+time spent - 0.01
 edges failed to embed count - 15
-crossing number - 39
+crossing number - 36
 ----------------------------

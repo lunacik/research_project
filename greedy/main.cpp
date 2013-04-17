@@ -52,20 +52,21 @@ int main(int argc, char *argv[])
     	edgesFailedToEmbedList2[i][0] = edgesFailedToEmbedList[i][0];
     	edgesFailedToEmbedList2[i][1] = edgesFailedToEmbedList[i][1];
     }
-    int min_cr = 9999999;
-    for(int i = 0; i < edgesCount; i++)
-    {
-		//begin = clock();
+    //int min_cr = 9999999;
+    //for(int i = 0; i < edgesCount; i++)
+    //{
+		begin = clock();
 		int cr = getCrossingNumber(edgesSucceedToEmbed, edgesCount,
 				edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
-		if(cr < min_cr) min_cr = cr;
-		//end = clock();
+		//if(cr < min_cr) min_cr = cr;
+		end = clock();
 
-		//time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+		time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-		//std::cout << "time spent - " << time_spent << std::endl;
-		//std::cout << "edges failed to embed count - " << edgesFailedToEmbedCount << std::endl;
-		//std::cout << "crossing number - " << cr << std::endl;
+		std::cout << "time spent - " << time_spent << std::endl;
+		std::cout << "edges failed to embed count - " << edgesFailedToEmbedCount << std::endl;
+		std::cout << "crossing number - " << cr << std::endl;
+		/*
 		//std::cout << "------------------------------------\n";
 	    for(int i = 0; i < edgesFailedToEmbedCount; i++)
 	    {
@@ -73,8 +74,9 @@ int main(int argc, char *argv[])
 	    	edgesFailedToEmbedList[i][1] = edgesFailedToEmbedList2[i][1];
 	    }
 	    shuffleEdges(edgesFailedToEmbedList, edgesFailedToEmbedCount);
-    }
-    std::cout << "minimum crossing number - " << min_cr << std::endl;
+		*/
+    //}
+    //std::cout << "crossing number - " << min_cr << std::endl;
     /*
     for(int i = 0; i < edgesFailedToEmbedCount; i++)
     {
