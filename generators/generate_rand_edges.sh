@@ -53,6 +53,6 @@ done
 
 
 #converting to adjacency list
-./to_adj_list.py $fileName $fileName
+#./to_adj_list.py $fileName $fileName
 
 
