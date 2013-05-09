@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
         std::cout << "reading from file failed" << std::endl;
         exit(1);
     }
-
+	/*
     int ** edgesFailedToEmbedList = (int**)malloc(edgesCount * sizeof(int*));
     for(int i = 0; i < edgesCount; i++)
     {
@@ -40,31 +40,33 @@ int main(int argc, char *argv[])
     }
 
     std::vector<std::pair<int, int> > * edgesSucceedToEmbed = new std::vector<std::pair<int, int> >;
-
+	*/
     clock_t begin, end;
     double time_spent;
     
 
-
+	/*
     edgesFailedToEmbedCount = getEFTEC(edgesList, edgesCount, edgesFailedToEmbedList, edgesSucceedToEmbed, 10);
     for(int i = 0; i < edgesFailedToEmbedCount; i++)
     {
     	edgesFailedToEmbedList2[i][0] = edgesFailedToEmbedList[i][0];
     	edgesFailedToEmbedList2[i][1] = edgesFailedToEmbedList[i][1];
     }
+    */
     //int min_cr = 9999999;
     //for(int i = 0; i < edgesCount; i++)
     //{
+		srand(time(NULL));
+		shuffleEdges(edgesList, edgesCount);
 		begin = clock();
-		int cr = getCrossingNumber(edgesSucceedToEmbed, edgesCount,
-				edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
+		int cr = getCrossingNumber(edgesList, edgesCount, vertexCount);
 		//if(cr < min_cr) min_cr = cr;
 		end = clock();
 
 		time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
 		std::cout << "time spent - " << time_spent << std::endl;
-		std::cout << "edges failed to embed count - " << edgesFailedToEmbedCount << std::endl;
+		//std::cout << "edges failed to embed count - " << edgesFailedToEmbedCount << std::endl;
 		std::cout << "crossing number - " << cr << std::endl;
 		/*
 		//std::cout << "------------------------------------\n";
@@ -159,9 +161,9 @@ int main(int argc, char *argv[])
 
     */
     
-	delete edgesSucceedToEmbed;
+	//delete edgesSucceedToEmbed;
     freeEdgesList(edgesList, edgesCount);
-    freeEdgesList(edgesFailedToEmbedList, edgesCount);
+    //freeEdgesList(edgesFailedToEmbedList, edgesCount);
     
     return 0;
 }

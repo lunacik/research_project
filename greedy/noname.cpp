@@ -9,6 +9,7 @@
 #include <boost/graph/planar_face_traversal.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
 #include "tools.h"
+#include "greedy.h"
 
 using namespace boost;
 
@@ -223,67 +224,64 @@ faces_list backtrace(std::map<int, int> map, int lastFaceId, faces_list dualGrap
 }
 
 
-int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, int edgesCount,
-		int ** edgesFailedToEmbedList, int edgesFailedToEmbedCount, int vertexCount)
+int getCrossingNumber(int ** edgesList, int edgesCount, int vertexCount)
 {
 	int cr = 0;
 
 	graphD theGraph(vertexCount);
 
-    for(int i = 0; i < edgesCount - edgesFailedToEmbedCount; i++)
+    for(int i = 0; i < edgesCount; i++)
     {
-        add_edge(edgesSucceedToEmbed->at(i).first, edgesSucceedToEmbed->at(i).second, theGraph);
-    }
-	
-    for(int i = 0; i < edgesFailedToEmbedCount; i++)
-    {
-    	faces_list dualGraph = getDualGraph(theGraph, vertexCount);
-    	faces_list startFaces = getFaces(dualGraph, edgesFailedToEmbedList[i][0]);
-    	faces_list endFaces = getFaces(dualGraph, edgesFailedToEmbedList[i][1]);
+		if(!tryToAddEdge(&theGraph, edgesList[i][0], edgesList[i][1]))
+		{
+			faces_list dualGraph = getDualGraph(theGraph, vertexCount);
+			faces_list startFaces = getFaces(dualGraph, edgesList[i][0]);
+			faces_list endFaces = getFaces(dualGraph, edgesList[i][1]);
 
-    	std::deque<Face> deq;
-    	faces_list closedFaces;
-    	std::map<int, int> map;
+			std::deque<Face> deq;
+			faces_list closedFaces;
+			std::map<int, int> map;
 
-    	for (faces_list::iterator it = startFaces.begin() ; it != startFaces.end(); ++it)
-    	{
-    		dualGraph[it->id].isClosed = true;
-    		deq.push_back(dualGraph[it->id]);
-    		map[it->id] = -1;
-    	}
-
-    	bool found = false;
-    	//BFS
-    	while(!deq.empty())
-    	{
-    		Face element = deq.front();
-    		deq.pop_front();
-
-        	for(faces_list::iterator it = endFaces.begin() ; it != endFaces.end(); ++it)
-        	{
-        		if(*it == element)
-        		{
-        			found = true;
-        			break;
-        		}
-        	}
-
-        	if(found)
+			for (faces_list::iterator it = startFaces.begin() ; it != startFaces.end(); ++it)
 			{
-        		faces_list path = backtrace(map, element.id, dualGraph);
-        		cr += path.size() - 1;
-            	planarize_path(&theGraph, edgesFailedToEmbedList[i], &path, &vertexCount);
-        		break;
+				dualGraph[it->id].isClosed = true;
+				deq.push_back(dualGraph[it->id]);
+				map[it->id] = -1;
 			}
 
-        	std::vector<int> adjacentFaces = getAdjacentFaces(element, dualGraph);
+			bool found = false;
+			//BFS
+			while(!deq.empty())
+			{
+				Face element = deq.front();
+				deq.pop_front();
 
-        	for(std::vector<int>::iterator it = adjacentFaces.begin() ; it != adjacentFaces.end(); ++it)
-        	{
-				dualGraph[*it].isClosed = true;
-				deq.push_back(dualGraph[*it]);
-				map[*it] = element.id;
-        	}
+				for(faces_list::iterator it = endFaces.begin() ; it != endFaces.end(); ++it)
+				{
+					if(*it == element)
+					{
+						found = true;
+						break;
+					}
+				}
+
+				if(found)
+				{
+					faces_list path = backtrace(map, element.id, dualGraph);
+					cr += path.size() - 1;
+					planarize_path(&theGraph, edgesList[i], &path, &vertexCount);
+					break;
+				}
+
+				std::vector<int> adjacentFaces = getAdjacentFaces(element, dualGraph);
+
+				for(std::vector<int>::iterator it = adjacentFaces.begin() ; it != adjacentFaces.end(); ++it)
+				{
+					dualGraph[*it].isClosed = true;
+					deq.push_back(dualGraph[*it]);
+					map[*it] = element.id;
+				}
+			}
 
     	}
     }
