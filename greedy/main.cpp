@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     bool printEFTEC = false;
     bool printMinimumCr = false;
     
-    while ((option = getopt(argc, argv,"f:i:tem")) != -1) 
+    while ((option = getopt(argc, argv,"f:i:temn:")) != -1) 
     {
         switch (option)
         {
@@ -92,25 +92,23 @@ int main(int argc, char *argv[])
 	begin = clock();
 	//MAIN BODY
 	
-    edgesFailedToEmbedCount = getEFTEC(edgesList, edgesCount, 
-			edgesFailedToEmbedList, edgesSucceedToEmbed, greedyIterations);
-
+    
+	int minEFTEC;
+	
     for(int i = 0; i < iterationsCount; i++)
     {
-		for(int j = 0; j < edgesFailedToEmbedCount; j++)
-		{
-			edgesFailedToEmbedListCopy[j][0] = edgesFailedToEmbedList[j][0];
-			edgesFailedToEmbedListCopy[j][1] = edgesFailedToEmbedList[j][1];
-		}
+		edgesFailedToEmbedCount = getEFTEC(edgesList, edgesCount, 
+			edgesFailedToEmbedList, edgesSucceedToEmbed, greedyIterations);
 
 		shuffleEdges(edgesSucceedToEmbed);
 		
 		int cr = getCrossingNumber(edgesSucceedToEmbed, edgesCount,
-			edgesFailedToEmbedListCopy, edgesFailedToEmbedCount, vertexCount);
+			edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
 			
 		if(cr < minCr)
 		{
 			minCr = cr;
+			minEFTEC = edgesFailedToEmbedCount;
 		}
 		
 		sumCr += cr;
@@ -129,7 +127,7 @@ int main(int argc, char *argv[])
 	if(printEFTEC)
 	{
 		
-		std::cout << "EFTEC - " << edgesFailedToEmbedCount << std::endl;
+		std::cout << "EFTEC - " << minEFTEC << std::endl;
 	}
 	
 	if(printMinimumCr)
