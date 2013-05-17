@@ -6,6 +6,18 @@
 #include "noname.h"
 #include "randomize.h"
 #include <vector>
+#include <unistd.h>
+//#include <stdio.h>
+#include <stdlib.h>
+#include <getopt.h>
+
+
+
+void print_usage_and_exit()
+{
+	std::cout << "usage: greedy -f file_name [-i iterations_count, -t, -e, m, n]" << std::endl;
+    exit(1);
+}
 
 /* main 
  * graph is read from a given file as parameter */
@@ -13,13 +25,49 @@ int main(int argc, char *argv[])
 {
     if(argc < 2)
     {
-        std::cout << "usage: " << argv[0] << "file_name" << std::endl;
-        exit(1);
+        print_usage_and_exit();
     }
     
-    int edgesCount, vertexCount, edgesFailedToEmbedCount;
+    int option = 0;
+    int greedyIterations = 10;
+    char fileName[255];
+    bool isFileNameSet = false;
+    int iterationsCount = 1;
+    bool printTime = false;
+    bool printEFTEC = false;
+    bool printMinimumCr = false;
+    
+    while ((option = getopt(argc, argv,"f:i:tem")) != -1) 
+    {
+        switch (option)
+        {
+             case 'f' : strcpy(fileName, optarg);
+						isFileNameSet = true;
+                 break;
+             case 'i' : iterationsCount = atoi(optarg);
+                 break;
+             case 't' : printTime = true;
+                 break;
+             case 'e' : printEFTEC = true;
+                 break;
+             case 'm' : printMinimumCr = true;
+                 break;
+             case 'n' : greedyIterations = atoi(optarg);
+				 break;
+             default: print_usage_and_exit(); 
+        }   
+    }   
+    
+    if (!isFileNameSet)
+    {
+        print_usage_and_exit();
+    }
 
-    int ** edgesList = readGraphFromFile(argv[1], &edgesCount, &vertexCount);
+    
+    int edgesCount, vertexCount, edgesFailedToEmbedCount;
+    int minCr = 9999999, sumCr = 0;
+
+    int ** edgesList = readGraphFromFile(fileName, &edgesCount, &vertexCount);
     
     if(edgesList == NULL)
     {
@@ -28,15 +76,12 @@ int main(int argc, char *argv[])
     }
 
     int ** edgesFailedToEmbedList = (int**)malloc(edgesCount * sizeof(int*));
+    int ** edgesFailedToEmbedListCopy = (int**)malloc(edgesCount * sizeof(int*));
+    
     for(int i = 0; i < edgesCount; i++)
     {
     	edgesFailedToEmbedList[i] = (int*)malloc(2 * sizeof(int));
-    }
-    
-    int ** edgesFailedToEmbedList2 = (int**)malloc(edgesCount * sizeof(int*));
-    for(int i = 0; i < edgesCount; i++)
-    {
-    	edgesFailedToEmbedList2[i] = (int*)malloc(2 * sizeof(int));
+    	edgesFailedToEmbedListCopy[i] = (int*)malloc(2 * sizeof(int));
     }
 
     std::vector<std::pair<int, int> > * edgesSucceedToEmbed = new std::vector<std::pair<int, int> >;
@@ -44,121 +89,57 @@ int main(int argc, char *argv[])
     clock_t begin, end;
     double time_spent;
     
+	begin = clock();
+	//MAIN BODY
+	
+    edgesFailedToEmbedCount = getEFTEC(edgesList, edgesCount, 
+			edgesFailedToEmbedList, edgesSucceedToEmbed, greedyIterations);
 
-
-    edgesFailedToEmbedCount = getEFTEC(edgesList, edgesCount, edgesFailedToEmbedList, edgesSucceedToEmbed, 10);
-    for(int i = 0; i < edgesFailedToEmbedCount; i++)
+    for(int i = 0; i < iterationsCount; i++)
     {
-    	edgesFailedToEmbedList2[i][0] = edgesFailedToEmbedList[i][0];
-    	edgesFailedToEmbedList2[i][1] = edgesFailedToEmbedList[i][1];
-    }
-    //int min_cr = 9999999;
-    //for(int i = 0; i < edgesCount; i++)
-    //{
-		begin = clock();
+		for(int j = 0; j < edgesFailedToEmbedCount; j++)
+		{
+			edgesFailedToEmbedListCopy[j][0] = edgesFailedToEmbedList[j][0];
+			edgesFailedToEmbedListCopy[j][1] = edgesFailedToEmbedList[j][1];
+		}
+
+		shuffleEdges(edgesSucceedToEmbed);
+		
 		int cr = getCrossingNumber(edgesSucceedToEmbed, edgesCount,
-				edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
-		//if(cr < min_cr) min_cr = cr;
-		end = clock();
+			edgesFailedToEmbedListCopy, edgesFailedToEmbedCount, vertexCount);
+			
+		if(cr < minCr)
+		{
+			minCr = cr;
+		}
+		
+		sumCr += cr;
+	}
+	
+	//END MAIN BODY
+	end = clock();
 
-		time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+	time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
+	if(printTime)
+	{
 		std::cout << "time spent - " << time_spent << std::endl;
-		std::cout << "edges failed to embed count - " << edgesFailedToEmbedCount << std::endl;
-		std::cout << "crossing number - " << cr << std::endl;
-		/*
-		//std::cout << "------------------------------------\n";
-	    for(int i = 0; i < edgesFailedToEmbedCount; i++)
-	    {
-	    	edgesFailedToEmbedList[i][0] = edgesFailedToEmbedList2[i][0];
-	    	edgesFailedToEmbedList[i][1] = edgesFailedToEmbedList2[i][1];
-	    }
-	    shuffleEdges(edgesFailedToEmbedList, edgesFailedToEmbedCount);
-		*/
-    //}
-    //std::cout << "crossing number - " << min_cr << std::endl;
-    /*
-    for(int i = 0; i < edgesFailedToEmbedCount; i++)
-    {
-    	edgesFailedToEmbedList[i][0] = edgesFailedToEmbedList2[i][0];
-    	edgesFailedToEmbedList[i][1] = edgesFailedToEmbedList2[i][1];
-    }
-    shuffleEdges(edgesFailedToEmbedList, edgesFailedToEmbedCount);
-    begin = clock();
-    cr = getCrossingNumber(edgesSucceedToEmbed, edgesCount,
-    		edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
-
-    end = clock();
-
-    time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-
-    std::cout << "time spent - " << time_spent << std::endl;
-    //std::cout << "edges failed to embed count - " << edgesFailedToEmbedCount << std::endl;
-    std::cout << "crossing number - " << cr << std::endl;
-    std::cout << "------------------------------------\n";
-
-
-    for(int i = 0; i < edgesFailedToEmbedCount; i++)
-    {
-    	edgesFailedToEmbedList[i][0] = edgesFailedToEmbedList2[i][0];
-    	edgesFailedToEmbedList[i][1] = edgesFailedToEmbedList2[i][1];
-    }
-    shuffleEdges(edgesFailedToEmbedList, edgesFailedToEmbedCount);
-    begin = clock();
-    cr = getCrossingNumber(edgesSucceedToEmbed, edgesCount,
-    		edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
-
-    end = clock();
-
-    time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-
-    std::cout << "time spent - " << time_spent << std::endl;
-    //std::cout << "edges failed to embed count - " << edgesFailedToEmbedCount << std::endl;
-    std::cout << "crossing number - " << cr << std::endl;
-    std::cout << "------------------------------------\n";
-    for(int i = 0; i < edgesFailedToEmbedCount; i++)
-    {
-    	edgesFailedToEmbedList[i][0] = edgesFailedToEmbedList2[i][0];
-    	edgesFailedToEmbedList[i][1] = edgesFailedToEmbedList2[i][1];
-    }
-    shuffleEdges(edgesFailedToEmbedList, edgesFailedToEmbedCount);
-
-    begin = clock();
-    cr = getCrossingNumber(edgesSucceedToEmbed, edgesCount,
-    		edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
-
-    end = clock();
-
-    time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-
-    std::cout << "time spent - " << time_spent << std::endl;
-    //std::cout << "edges failed to embed count - " << edgesFailedToEmbedCount << std::endl;
-    std::cout << "crossing number - " << cr << std::endl;
-    std::cout << "------------------------------------\n";
-    for(int i = 0; i < edgesFailedToEmbedCount; i++)
-    {
-    	edgesFailedToEmbedList[i][0] = edgesFailedToEmbedList2[i][0];
-    	edgesFailedToEmbedList[i][1] = edgesFailedToEmbedList2[i][1];
-    }
-    shuffleEdges(edgesFailedToEmbedList, edgesFailedToEmbedCount);
-
-    begin = clock();
-    cr = getCrossingNumber(edgesSucceedToEmbed, edgesCount,
-    		edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
-
-    end = clock();
-    
-    time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-
-    std::cout << "time spent - " << time_spent << std::endl;
-    //std::cout << "edges failed to embed count - " << edgesFailedToEmbedCount << std::endl;
-    std::cout << "crossing number - " << cr << std::endl;
-    std::cout << "------------------------------------\n";
-
-
-
-    */
-    
+	}
+	
+	if(printEFTEC)
+	{
+		
+		std::cout << "EFTEC - " << edgesFailedToEmbedCount << std::endl;
+	}
+	
+	if(printMinimumCr)
+	{
+		std::cout << "minimum crossing number - " << minCr << std::endl;
+	}
+	
+	std::cout << "average crossing number - " << sumCr / iterationsCount << std::endl;
+	
+	
 	delete edgesSucceedToEmbed;
     freeEdgesList(edgesList, edgesCount);
     freeEdgesList(edgesFailedToEmbedList, edgesCount);

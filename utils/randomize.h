@@ -2,9 +2,9 @@
 #ifndef RANDOMIZE_H
 #define RANDOMIZE_H
 
+#include <vector>
 
 void shuffleEdges(int ** edgesList, int edgesCount);
-int * getRandomEdges(int * listSize, int edgesCount);
-int * getRandomEdgesFromList(int * list, int listSize, int * newListSize);
+void shuffleEdges(std::vector<std::pair<int, int> > * edgesList);
 
 #endif

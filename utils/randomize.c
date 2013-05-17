@@ -5,6 +5,7 @@
 #include "randomize.h"
 #include "time.h"
 
+
 /* shuffle given edges list in random order */
 void shuffleEdges(int ** edgesList, int edgesCount)
 {
@@ -24,71 +25,21 @@ void shuffleEdges(int ** edgesList, int edgesCount)
 }
 
 
-
-/* generating list random of indexes of random size */
-int * getRandomEdges(int * listSize, int edgesCount)
+/* shuffle given vector of edges in random order */
+void shuffleEdges(std::vector<std::pair<int, int> > * edgesList)
 {
-    *listSize = random() % edgesCount + 1; //maybe some range will be more efficient
-    int i, j, tmp, unique = 1;
-    int * list = (int*)malloc(*listSize * sizeof(int));
-    for(i = 0; i < *listSize; i++)
+    int i, j;
+    int tmp1, tmp2;
+	const int edgesCount = edgesList->size();
+
+    for(i = edgesCount - 1; i >= 0; i--)
     {
-        tmp = random() % edgesCount;
-        for(j = 0; j < i; j++)
-        {
-            if(list[j] == tmp)
-            {
-                unique = 0;
-                break;
-            }
-        }
-        if(unique)
-        {
-            list[i] = tmp;
-        }
-        else
-        {
-            unique = 1;
-            i--;
-        }
+        j = rand() % edgesCount;
+        tmp1 = edgesList->at(i).first;
+        tmp2 = edgesList->at(i).second;
+        edgesList->at(i).first = edgesList->at(j).first;
+        edgesList->at(i).second = edgesList->at(j).second;
+        edgesList->at(j).first = tmp1;
+        edgesList->at(j).second = tmp2;
     }
-    return list;
 }
-
-
-/* method to return random number of random edges from list */
-int * getRandomEdgesFromList(int * list, int listSize, int * newListSize)
-{
-    //srand(time(NULL));
-    *newListSize = rand() % listSize; //size can be same as initial list or zero - flaw or pros?
-    int * newList = (int*)malloc(*newListSize * sizeof(int));
-    int i, j, tmp, unique = 1;
-    for(i = 0; i < *newListSize; i++)
-    {
-        tmp = list[rand() % listSize];
-        for(j = 0; j < i; j++)
-        {
-            if(newList[j] == tmp)
-            {
-                unique = 0;
-                break;
-            }
-        }
-        if(unique)
-        {
-            newList[i] = tmp;
-        }
-        else
-        {
-            unique = 1;
-            i--;
-        }
-    }
-    return newList;
-}
-
-
-
-
-
-
