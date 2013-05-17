@@ -1,23 +1,24 @@
 #!/bin/bash
 
-outputFolder=crossings
-sleepDelay=1
+outputFolder=crossings/$1x$2
+if [ -d $outputFolder ]; then
+    rm $outputFolder -r
+fi
+
+mkdir $outputFolder
+
 
 function getCrossings {
     fileName=`basename $1`
+    echo processing $fileName
     outputFile=$outputFolder/${fileName%.*}
-    echo > $outputFile
-    for((it=1; it <=$2; it++)); do
-        echo "$it iteration" >> $outputFile
-        greedy/./greedy $1 >> $outputFile
-        echo "----------------------------" >> $outputFile
-        sleep $sleepDelay
-    done
+    echo -n > $outputFile
+    greedy/./greedy -f $1 -i $2 -t -m -n $3 >> $outputFile
 }
 
 
 
-for item in "${@:2}"
+for item in "${@:3}"
 do
-        getCrossings $item $1
+        getCrossings $item $1 $2
 done

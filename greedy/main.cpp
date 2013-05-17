@@ -7,7 +7,6 @@
 #include "randomize.h"
 #include <vector>
 #include <unistd.h>
-//#include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
 
@@ -15,7 +14,8 @@
 
 void print_usage_and_exit()
 {
-	std::cout << "usage: greedy -f file_name [-i iterations_count, -t, -e, m, n]" << std::endl;
+	std::cout << "usage: greedy -f file_name [-i iterations_count, "
+        <<  "-t, -e, -m, -n greedy_iterations_count]" << std::endl;
     exit(1);
 }
 
@@ -76,12 +76,10 @@ int main(int argc, char *argv[])
     }
 
     int ** edgesFailedToEmbedList = (int**)malloc(edgesCount * sizeof(int*));
-    int ** edgesFailedToEmbedListCopy = (int**)malloc(edgesCount * sizeof(int*));
     
     for(int i = 0; i < edgesCount; i++)
     {
     	edgesFailedToEmbedList[i] = (int*)malloc(2 * sizeof(int));
-    	edgesFailedToEmbedListCopy[i] = (int*)malloc(2 * sizeof(int));
     }
 
     std::vector<std::pair<int, int> > * edgesSucceedToEmbed = new std::vector<std::pair<int, int> >;
@@ -93,7 +91,7 @@ int main(int argc, char *argv[])
 	//MAIN BODY
 	
     
-	int minEFTEC;
+	int minEFTEC = 0;
 	
     for(int i = 0; i < iterationsCount; i++)
     {
