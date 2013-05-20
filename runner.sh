@@ -13,7 +13,7 @@ function getCrossings {
     echo processing $fileName
     outputFile=$outputFolder/${fileName%.*}
     echo -n > $outputFile
-    greedy/./greedy -f $1 -i $2 -t -m -n $3 >> $outputFile
+    greedy/./greedy -f $1 -i $2 -t -n $3 >> $outputFile
 }
 
 

@@ -11,7 +11,7 @@
 #include "tools.h"
 
 using namespace boost;
-
+int e = 0;
 
 struct Edge
 {
@@ -118,9 +118,9 @@ faces_list getDualGraph(graphD g, int vertexCount)
 }
 
 
-faces_list getFaces(faces_list dualGraph, int vertex)
+std::vector<int> getFaces(faces_list dualGraph, int vertex)
 {
-	faces_list faces;
+    std::vector<int> facesIds;
 
 	for (faces_list::iterator it = dualGraph.begin() ; it != dualGraph.end(); ++it)
 	{
@@ -128,13 +128,13 @@ faces_list getFaces(faces_list dualGraph, int vertex)
 		{
 			if(*itr == vertex)
 			{
-				faces.push_back(*it);
+				facesIds.push_back(it->id);
 				break;
 			}
 		}
 	}
 
-	return faces;
+	return facesIds;
 }
 
 
@@ -190,8 +190,9 @@ void planarize_path(graphD * theGraph, int * edge, faces_list * path, int * vert
 	if(path->size() == 2)
 	{
 		findCommonEdge(path->at(1), path->at(0), &u, &v);
-		planarize_two_edges(theGraph, u, v, edge[0], edge[1], (*vertexCount)++);
+		planarize_two_edges(theGraph, u, v, edge[0], edge[1], *vertexCount);
 		(*vertexCount)++;
+        e += 2;
 	}
 	else
 	{
@@ -200,11 +201,13 @@ void planarize_path(graphD * theGraph, int * edge, faces_list * path, int * vert
 			findCommonEdge(*it, *(it + 1), &u, &v);
 			planarize_one_edge(theGraph, u, v, edge[0], *vertexCount);
 			edge[0] = (*vertexCount)++;
+            e += 2;
 		}
 
 		findCommonEdge(path->at(1), path->at(0), &u, &v);
 		planarize_two_edges(theGraph, u, v, *vertexCount - 1, edge[1], *vertexCount);
 		(*vertexCount)++;
+        e += 2;
 	}
 }
 
@@ -226,6 +229,7 @@ faces_list backtrace(std::map<int, int> map, int lastFaceId, faces_list dualGrap
 int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, int edgesCount,
 		int ** edgesFailedToEmbedList, int edgesFailedToEmbedCount, int vertexCount)
 {
+    e = 0;
 	int cr = 0;
 
 	graphD theGraph(vertexCount);
@@ -238,18 +242,18 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
     for(int i = 0; i < edgesFailedToEmbedCount; i++)
     {
     	faces_list dualGraph = getDualGraph(theGraph, vertexCount);
-    	faces_list startFaces = getFaces(dualGraph, edgesFailedToEmbedList[i][0]);
-    	faces_list endFaces = getFaces(dualGraph, edgesFailedToEmbedList[i][1]);
-
-    	std::deque<Face> deq;
+        std::vector<int> startFaces = getFaces(dualGraph, edgesFailedToEmbedList[i][0]);
+        std::vector<int> endFaces = getFaces(dualGraph, edgesFailedToEmbedList[i][1]);
+    	
+        std::deque<Face> deq;
     	faces_list closedFaces;
     	std::map<int, int> map;
 
-    	for (faces_list::iterator it = startFaces.begin() ; it != startFaces.end(); ++it)
+    	for (std::vector<int>::iterator it = startFaces.begin() ; it != startFaces.end(); ++it)
     	{
-    		dualGraph[it->id].isClosed = true;
-    		deq.push_back(dualGraph[it->id]);
-    		map[it->id] = -1;
+    		dualGraph[*it].isClosed = true;
+    		deq.push_back(dualGraph[*it]);
+    		map[*it] = -1;
     	}
 
     	bool found = false;
@@ -259,9 +263,9 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
     		Face element = deq.front();
     		deq.pop_front();
 
-        	for(faces_list::iterator it = endFaces.begin() ; it != endFaces.end(); ++it)
+        	for(std::vector<int>::iterator it = endFaces.begin() ; it != endFaces.end(); ++it)
         	{
-        		if(*it == element)
+        		if(*it == element.id)
         		{
         			found = true;
         			break;
@@ -288,6 +292,7 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
     	}
     }
 
-
-	return cr;
+    std::cout << "edges  " << e << " , vertices " << vertexCount << std::endl;
+    std::cout << "cr " << cr << std::endl;
+    return cr;
 }

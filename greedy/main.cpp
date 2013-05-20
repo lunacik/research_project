@@ -15,7 +15,7 @@
 void print_usage_and_exit()
 {
 	std::cout << "usage: greedy -f file_name [-i iterations_count, "
-        <<  "-t, -e, -m, -n greedy_iterations_count]" << std::endl;
+        <<  "-t, -e, -m, -n greedy_iterations_count, -l]" << std::endl;
     exit(1);
 }
 
@@ -36,8 +36,9 @@ int main(int argc, char *argv[])
     bool printTime = false;
     bool printEFTEC = false;
     bool printMinimumCr = false;
+    bool lessVerbose = false;
     
-    while ((option = getopt(argc, argv,"f:i:temn:")) != -1) 
+    while ((option = getopt(argc, argv,"f:i:temn:l")) != -1) 
     {
         switch (option)
         {
@@ -54,6 +55,8 @@ int main(int argc, char *argv[])
                  break;
              case 'n' : greedyIterations = atoi(optarg);
 				 break;
+             case 'l':  lessVerbose = true;
+                 break;
              default: print_usage_and_exit(); 
         }   
     }   
@@ -97,13 +100,13 @@ int main(int argc, char *argv[])
     {
 		edgesFailedToEmbedCount = getEFTEC(edgesList, edgesCount, 
 			edgesFailedToEmbedList, edgesSucceedToEmbed, greedyIterations);
-
-		shuffleEdges(edgesSucceedToEmbed);
+        std::cout << edgesFailedToEmbedCount << std::endl;
+        shuffleEdges(edgesSucceedToEmbed);
 		
 		int cr = getCrossingNumber(edgesSucceedToEmbed, edgesCount,
 			edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
 			
-		if(cr < minCr)
+        if(cr < minCr)
 		{
 			minCr = cr;
 			minEFTEC = edgesFailedToEmbedCount;
@@ -116,25 +119,30 @@ int main(int argc, char *argv[])
 	end = clock();
 
 	time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-
-	if(printTime)
-	{
-		std::cout << "time spent - " << time_spent << std::endl;
-	}
-	
-	if(printEFTEC)
-	{
-		
-		std::cout << "EFTEC - " << minEFTEC << std::endl;
-	}
-	
-	if(printMinimumCr)
-	{
-		std::cout << "minimum crossing number - " << minCr << std::endl;
-	}
-	
-	std::cout << "average crossing number - " << sumCr / iterationsCount << std::endl;
-	
+    if(lessVerbose)
+    {
+        std::cout << minCr << std::endl;
+    }
+    else
+    { 
+        if(printTime)
+        {
+            std::cout << "time spent - " << time_spent << std::endl;
+        }
+        
+        if(printEFTEC)
+        {
+            
+            std::cout << "EFTEC - " << minEFTEC << std::endl;
+        }
+        
+        if(printMinimumCr)
+        {
+            std::cout << "minimum crossing number - " << minCr << std::endl;
+        }
+        
+        std::cout << "average crossing number - " << (float)sumCr / iterationsCount << std::endl;
+    }
 	
 	delete edgesSucceedToEmbed;
     freeEdgesList(edgesList, edgesCount);
