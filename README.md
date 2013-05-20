@@ -10,10 +10,10 @@ Compile: run make in greedy.
 [-i iterations_count, -t, -e, -m, -n greedy_iterations_count, -l]
 
 Usage: greedy -f FILENAME   => by default print average crossing number found  
-Optional:  
--i          -   iterations count for whole crossing number search  
--t          -   prints time taken to complete  
--e          -   prints edges which failed to embedd count on smallest crossing found  
--m          -   prints smallest crossing number found  
--n          -   iterations count for greedy EFTEC search  
--l          -   less verbose. Prints only smallest crossing number found
+<br>Optional:</br>
+<br>-i          -   iterations count for whole crossing number search</br>
+<br>-t          -   prints time taken to complete</br>
+<br>-e          -   prints edges which failed to embedd count on smallest crossing found</br>
+<br>-m          -   prints smallest crossing number found</br>
+<br>-n          -   iterations count for greedy EFTEC search</br>
+<br>-l          -   less verbose. Prints only smallest crossing number found</br>
