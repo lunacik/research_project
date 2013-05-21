@@ -11,7 +11,6 @@
 #include "tools.h"
 
 using namespace boost;
-int e = 0;
 
 struct Edge
 {
@@ -192,7 +191,6 @@ void planarize_path(graphD * theGraph, int * edge, faces_list * path, int * vert
 		findCommonEdge(path->at(1), path->at(0), &u, &v);
 		planarize_two_edges(theGraph, u, v, edge[0], edge[1], *vertexCount);
 		(*vertexCount)++;
-        e += 2;
 	}
 	else
 	{
@@ -201,13 +199,11 @@ void planarize_path(graphD * theGraph, int * edge, faces_list * path, int * vert
 			findCommonEdge(*it, *(it + 1), &u, &v);
 			planarize_one_edge(theGraph, u, v, edge[0], *vertexCount);
 			edge[0] = (*vertexCount)++;
-            e += 2;
 		}
 
 		findCommonEdge(path->at(1), path->at(0), &u, &v);
 		planarize_two_edges(theGraph, u, v, *vertexCount - 1, edge[1], *vertexCount);
 		(*vertexCount)++;
-        e += 2;
 	}
 }
 
@@ -229,7 +225,6 @@ faces_list backtrace(std::map<int, int> map, int lastFaceId, faces_list dualGrap
 int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, int edgesCount,
 		int ** edgesFailedToEmbedList, int edgesFailedToEmbedCount, int vertexCount)
 {
-    e = 0;
 	int cr = 0;
 
 	graphD theGraph(vertexCount);
@@ -244,7 +239,7 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
     	faces_list dualGraph = getDualGraph(theGraph, vertexCount);
         std::vector<int> startFaces = getFaces(dualGraph, edgesFailedToEmbedList[i][0]);
         std::vector<int> endFaces = getFaces(dualGraph, edgesFailedToEmbedList[i][1]);
-    	
+//std::cout << i << std::endl;	
         std::deque<Face> deq;
     	faces_list closedFaces;
     	std::map<int, int> map;
@@ -292,7 +287,5 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
     	}
     }
 
-    std::cout << "edges  " << e << " , vertices " << vertexCount << std::endl;
-    std::cout << "cr " << cr << std::endl;
     return cr;
 }

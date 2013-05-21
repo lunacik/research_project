@@ -15,7 +15,7 @@
 void print_usage_and_exit()
 {
 	std::cout << "usage: greedy -f file_name [-i iterations_count, "
-        <<  "-t, -e, -m, -n greedy_iterations_count, -l]" << std::endl;
+        <<  "-t, -e, -m, -n greedy_iterations_count, -l, -d]" << std::endl;
     exit(1);
 }
 
@@ -37,8 +37,9 @@ int main(int argc, char *argv[])
     bool printEFTEC = false;
     bool printMinimumCr = false;
     bool lessVerbose = false;
+    bool distributedTime = false;
     
-    while ((option = getopt(argc, argv,"f:i:temn:l")) != -1) 
+    while ((option = getopt(argc, argv,"f:i:temn:ld")) != -1) 
     {
         switch (option)
         {
@@ -56,6 +57,8 @@ int main(int argc, char *argv[])
              case 'n' : greedyIterations = atoi(optarg);
 				 break;
              case 'l':  lessVerbose = true;
+                 break;
+             case 'd': distributedTime = true;
                  break;
              default: print_usage_and_exit(); 
         }   
@@ -87,25 +90,28 @@ int main(int argc, char *argv[])
 
     std::vector<std::pair<int, int> > * edgesSucceedToEmbed = new std::vector<std::pair<int, int> >;
 
-    clock_t begin, end;
+    clock_t begin, end, cbegin = 0, cend = 0, ebegin = 0, eend = 0;
     double time_spent;
-    
-	begin = clock();
-	//MAIN BODY
-	
     
 	int minEFTEC = 0;
 	
+    begin = clock();
+	//MAIN BODY
+    
+	
     for(int i = 0; i < iterationsCount; i++)
     {
+        ebegin = clock();
 		edgesFailedToEmbedCount = getEFTEC(edgesList, edgesCount, 
 			edgesFailedToEmbedList, edgesSucceedToEmbed, greedyIterations);
-        std::cout << edgesFailedToEmbedCount << std::endl;
+        eend = clock();
+        //std::cout << edgesFailedToEmbedCount << std::endl;
+        //dafaq?
         shuffleEdges(edgesSucceedToEmbed);
-		
+	    cbegin = clock();
 		int cr = getCrossingNumber(edgesSucceedToEmbed, edgesCount,
 			edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
-			
+	    cend = clock();
         if(cr < minCr)
 		{
 			minCr = cr;
@@ -124,7 +130,12 @@ int main(int argc, char *argv[])
         std::cout << minCr << std::endl;
     }
     else
-    { 
+    {
+        if(distributedTime)
+        {
+            std::cout << "time spent on EFTEC search - " << (double)(eend - ebegin) / CLOCKS_PER_SEC << std::endl;
+            std::cout << "time spent on crossings search - " << (double)(cend - cbegin) / CLOCKS_PER_SEC << std::endl;
+        } 
         if(printTime)
         {
             std::cout << "time spent - " << time_spent << std::endl;

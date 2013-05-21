@@ -68,6 +68,14 @@ for k, v in adj_list.items():
 
 
 
+degree = 0
+
+for _, v in adj_list.items():
+    if v.__len__() > degree:
+        degree = v.__len__()
+
+
+
 for k, v in adj_list.items():
     for i in v:
         if(adj_list[i].__contains__(k)):
@@ -76,8 +84,6 @@ for k, v in adj_list.items():
 
 
 adj_list = {k : v for k, v in adj_list.items() if v}
-
-
 
 
 #OUT
@@ -97,6 +103,7 @@ for adj in adj_list:
 
 
 outputFile.write("-2\n")
+outputFile.write(str(degree))
 outputFile.close()
 
 

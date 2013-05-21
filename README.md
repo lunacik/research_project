@@ -7,7 +7,7 @@ Programming language - C++.
 Tested only on Linux with GCC 4.8.
 
 Compile: run make in greedy.
-[-i iterations_count, -t, -e, -m, -n greedy_iterations_count, -l]
+[-i iterations_count, -t, -e, -m, -n greedy_iterations_count, -l, -d]
 
 Usage: greedy -f FILENAME   => by default print average crossing number found  
 <br>Optional:</br>
@@ -17,3 +17,4 @@ Usage: greedy -f FILENAME   => by default print average crossing number found
 <br>-m          -   prints smallest crossing number found</br>
 <br>-n          -   iterations count for greedy EFTEC search</br>
 <br>-l          -   less verbose. Prints only smallest crossing number found</br>
+<br>-d          -   print distributed time of EFTEC and crossing search seprately</br>

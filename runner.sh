@@ -11,9 +11,10 @@ mkdir $outputFolder
 function getCrossings {
     fileName=`basename $1`
     echo processing $fileName
-    outputFile=$outputFolder/${fileName%.*}
+    outputFile=$outputFolder/$fileName
+    #outputFile=$outputFolder/${fileName%.*}
     echo -n > $outputFile
-    greedy/./greedy -f $1 -i $2 -t -n $3 >> $outputFile
+    greedy/./greedy -f $1 -i $2 -t -n $3 -d -e >> $outputFile
 }
 
 
