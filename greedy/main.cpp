@@ -106,8 +106,6 @@ int main(int argc, char *argv[])
 			edgesFailedToEmbedList, edgesSucceedToEmbed, greedyIterations);
         eend = clock();
         //std::cout << edgesFailedToEmbedCount << std::endl;
-        //dafaq?
-        shuffleEdges(edgesSucceedToEmbed);
 	    cbegin = clock();
 		int cr = getCrossingNumber(edgesSucceedToEmbed, edgesCount,
 			edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
