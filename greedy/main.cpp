@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 		edgesFailedToEmbedCount = getEFTEC(edgesList, edgesCount, 
 			edgesFailedToEmbedList, edgesSucceedToEmbed, greedyIterations);
         eend = clock();
-        //std::cout << edgesFailedToEmbedCount << std::endl;
+        
 	    cbegin = clock();
 		int cr = getCrossingNumber(edgesSucceedToEmbed, edgesCount,
 			edgesFailedToEmbedList, edgesFailedToEmbedCount, vertexCount);
