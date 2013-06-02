@@ -17,4 +17,4 @@ Usage: greedy -f FILENAME   => by default print average crossing number found
 <br>-m          -   prints smallest crossing number found</br>
 <br>-n          -   iterations count for greedy EFTEC search</br>
 <br>-l          -   less verbose. Prints only smallest crossing number found</br>
-<br>-d          -   print distributed time of EFTEC and crossing search seprately</br>
+<br>-d          -   print distributed time of EFTEC and crossing search separately</br>
