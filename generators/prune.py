@@ -20,17 +20,13 @@ inputFile.close()
 adj_list = {}
 
 for pair in l:
-    if(adj_list.__contains__(pair[0])):
-        adj_list[pair[0]].append(pair[1])
-    else:
+    if(not adj_list.__contains__(pair[0])):
         adj_list[pair[0]] = []
-        adj_list[pair[0]].append(pair[1])
+    adj_list[pair[0]].append(pair[1])
  
-    if(adj_list.__contains__(pair[1])):
-        adj_list[pair[1]].append(pair[0])
-    else:
+    if(not adj_list.__contains__(pair[1])):
         adj_list[pair[1]] = []
-        adj_list[pair[1]].append(pair[0])
+    adj_list[pair[1]].append(pair[0])
 
 
 def prune(graph, v):

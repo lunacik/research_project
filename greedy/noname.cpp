@@ -11,7 +11,7 @@
 #include "tools.h"
 
 using namespace boost;
-
+int e = 0;
 struct Edge
 {
 public:
@@ -191,6 +191,7 @@ void planarize_path(graphD * theGraph, int * edge, faces_list * path, int * vert
 		findCommonEdge(path->at(1), path->at(0), &u, &v);
 		planarize_two_edges(theGraph, u, v, edge[0], edge[1], *vertexCount);
 		(*vertexCount)++;
+        e += 3;
 	}
 	else
 	{
@@ -199,11 +200,13 @@ void planarize_path(graphD * theGraph, int * edge, faces_list * path, int * vert
 			findCommonEdge(*it, *(it + 1), &u, &v);
 			planarize_one_edge(theGraph, u, v, edge[0], *vertexCount);
 			edge[0] = (*vertexCount)++;
+            e += 2;
 		}
 
 		findCommonEdge(path->at(1), path->at(0), &u, &v);
 		planarize_two_edges(theGraph, u, v, *vertexCount - 1, edge[1], *vertexCount);
 		(*vertexCount)++;
+        e += 3;
 	}
 }
 
@@ -226,7 +229,7 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
 		int ** edgesFailedToEmbedList, int edgesFailedToEmbedCount, int vertexCount)
 {
 	int cr = 0;
-
+    e = 0;
 	graphD theGraph(vertexCount);
 
     for(int i = 0; i < edgesCount - edgesFailedToEmbedCount; i++)
@@ -286,6 +289,6 @@ int getCrossingNumber(std::vector<std::pair<int, int> > * edgesSucceedToEmbed, i
 
     	}
     }
-
+    std::cout << "e - " << e << std::endl;
     return cr;
 }

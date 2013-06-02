@@ -1,11 +1,10 @@
 #!/bin/bash
 
 outputFolder=crossings/$1x$2
-if [ -d $outputFolder ]; then
-    rm $outputFolder -r
+if [ ! -d $outputFolder ]; then
+    #rm $outputFolder -r
+    mkdir $outputFolder
 fi
-
-mkdir $outputFolder
 
 
 function getCrossings {
